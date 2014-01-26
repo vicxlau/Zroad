@@ -17,7 +17,7 @@
     <ignored path="Zroad_T1.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/BlankActivity.java" changelist="e75436d8-8ce8-4e0e-a79a-7b6e5bda2514" time="1390383580453" ignored="false" />
-    <file path="/fragment.java" changelist="e75436d8-8ce8-4e0e-a79a-7b6e5bda2514" time="1390546741896" ignored="false" />
+    <file path="/fragment.java" changelist="e75436d8-8ce8-4e0e-a79a-7b6e5bda2514" time="1390705037343" ignored="false" />
     <file path="$USER_HOME$/AndroidStudioProjects/MyFirstApplicationProject/MyFirstApplication/src/main/res/layout/activity_fullscreen.xml" changelist="e75436d8-8ce8-4e0e-a79a-7b6e5bda2514" time="1390314815179" ignored="false" />
     <file path="/blank.xml" changelist="e75436d8-8ce8-4e0e-a79a-7b6e5bda2514" time="1390383077676" ignored="false" />
     <file path="$USER_HOME$/workspace/Camera GPS/src/com/lmk/camera/gps/Act1.java" changelist="e75436d8-8ce8-4e0e-a79a-7b6e5bda2514" time="1390366776430" ignored="false" />
@@ -59,7 +59,7 @@
     <file path="$USER_HOME$/workspace/google_play_services/samples/MapAppProject/.idea/misc.xml" changelist="e75436d8-8ce8-4e0e-a79a-7b6e5bda2514" time="1390473779289" ignored="false" />
     <file path="$USER_HOME$/workspace/google_play_services/samples/MapAppProject/MapApp/src/main/java/com/example/mapapp/Map.java" changelist="e75436d8-8ce8-4e0e-a79a-7b6e5bda2514" time="1390474299591" ignored="false" />
     <file path="/Map.java" changelist="e75436d8-8ce8-4e0e-a79a-7b6e5bda2514" time="1390474299242" ignored="false" />
-    <file path="/Dummy.txt" changelist="e75436d8-8ce8-4e0e-a79a-7b6e5bda2514" time="1390473750464" ignored="false" />
+    <file path="/Dummy.txt" changelist="e75436d8-8ce8-4e0e-a79a-7b6e5bda2514" time="1390705037725" ignored="false" />
     <file path="$USER_HOME$/workspace/google_play_services/samples/MapAppProject/MapApp/src/main/AndroidManifest.xml" changelist="e75436d8-8ce8-4e0e-a79a-7b6e5bda2514" time="1390474740084" ignored="false" />
     <file path="$USER_HOME$/workspace/google_play_services/samples/MapAppProject/MapApp/build/source/r/debug/com/example/mapapp/R.java" changelist="e75436d8-8ce8-4e0e-a79a-7b6e5bda2514" time="1390476513950" ignored="false" />
     <file path="$USER_HOME$/android-sdks/extras/google/google_play_services/libproject/google-play-services_lib/project.properties" changelist="e75436d8-8ce8-4e0e-a79a-7b6e5bda2514" time="1390476513950" ignored="false" />
@@ -196,10 +196,10 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="AndroidManifest.xml" pinned="false" current="false" current-in-tab="true">
+          <file leaf-file-name="AndroidManifest.xml" pinned="false" current="true" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/AndroidManifest.xml">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="45" column="12" selection-start="1764" selection-end="1764" vertical-scroll-proportion="0.5879121">
+                <state line="3" column="23" selection-start="155" selection-end="166" vertical-scroll-proportion="0.15789473">
                   <folding />
                 </state>
               </provider>
@@ -247,10 +247,10 @@
       </split-first>
       <split-second>
         <leaf>
-          <file leaf-file-name="blank.xml" pinned="false" current="true" current-in-tab="true">
+          <file leaf-file-name="blank.xml" pinned="false" current="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/res/layout/blank.xml">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="66" column="0" selection-start="2715" selection-end="2715" vertical-scroll-proportion="0.050147492">
+                <state line="66" column="0" selection-start="2715" selection-end="2715" vertical-scroll-proportion="0.05704698">
                   <folding />
                 </state>
               </provider>
@@ -282,10 +282,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="22" />
-    <option name="width" value="1382" />
-    <option name="height" value="754" />
+    <option name="x" value="683" />
+    <option name="y" value="30" />
+    <option name="width" value="683" />
+    <option name="height" value="738" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -394,6 +394,37 @@
     </key>
   </component>
   <component name="RunManager" selected="Android Application.Zroad_T1">
+    <configuration default="true" type="GroovyScriptRunConfiguration" factoryName="Groovy">
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workDir" value="file://$PROJECT_DIR$" />
+      <setting name="debug" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="MavenRunConfiguration" factoryName="Maven">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list />
+            </option>
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method />
+    </configuration>
     <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
       <module name="" />
       <option name="TESTING_TYPE" value="0" />
@@ -410,6 +441,14 @@
       <option name="NETWORK_SPEED" value="full" />
       <option name="NETWORK_LATENCY" value="none" />
       <option name="CLEAR_LOGCAT" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="GriffonRunConfigurationType" factoryName="Griffon">
+      <module name="" />
+      <setting name="vmparams" value="" />
+      <setting name="cmdLine" value="run-app" />
+      <setting name="depsClasspath" value="true" />
+      <setting name="passParentEnv" value="true" />
       <method />
     </configuration>
     <configuration default="true" type="Remote" factoryName="Remote">
@@ -543,15 +582,15 @@
       <updated>1390314125505</updated>
       <workItem from="1390314137518" duration="4022000" />
       <workItem from="1390370798348" duration="15666000" />
-      <workItem from="1390643138675" duration="289000" />
+      <workItem from="1390643138675" duration="1604000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="19977000" />
+    <option name="totallyTimeSpent" value="21292000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="22" width="1382" height="754" extended-state="6" />
+    <frame x="683" y="30" width="683" height="738" extended-state="0" />
     <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -568,8 +607,8 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.67001677" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.245827" sideWeight="0.67504185" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32495812" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4009662" sideWeight="0.6510791" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34892085" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.275" sideWeight="0.67336684" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2590909" sideWeight="0.67336684" order="3" side_tool="false" content_ui="tabs" />
@@ -718,8 +757,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/res/layout/blank.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="66" column="0" selection-start="2715" selection-end="2715" vertical-scroll-proportion="0.050147492">
-          <folding />
+        <state line="126" column="15" selection-start="4895" selection-end="4895" vertical-scroll-proportion="0.0">
+          <folding>
+            <marker date="1390383081108" expanded="true" signature="4003:6678" placeholder="..." />
+            <marker date="1390383081108" expanded="true" signature="4228:5182" placeholder="..." />
+            <marker date="1390383081108" expanded="true" signature="4461:4876" placeholder="..." />
+            <marker date="1390383081108" expanded="true" signature="4895:5161" placeholder="..." />
+            <marker date="1390383081108" expanded="true" signature="5219:6662" placeholder="..." />
+            <marker date="1390383081108" expanded="true" signature="5484:6624" placeholder="..." />
+            <marker date="1390383081108" expanded="true" signature="5658:6174" placeholder="..." />
+            <marker date="1390383081108" expanded="true" signature="6196:6597" placeholder="..." />
+            <marker date="1390383081108" expanded="true" signature="6551:6583" placeholder="&quot;Close&quot;" />
+          </folding>
         </state>
       </provider>
       <provider editor-type-id="android-designer">
@@ -735,7 +784,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AndroidManifest.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="12" selection-start="1764" selection-end="1764" vertical-scroll-proportion="0.5879121">
+        <state line="3" column="23" selection-start="155" selection-end="166" vertical-scroll-proportion="0.15789473">
           <folding />
         </state>
       </provider>

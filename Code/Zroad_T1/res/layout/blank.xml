@@ -4,27 +4,40 @@
                 android:layout_height="match_parent"
                 tools:context=".MainActivity" >
 
-    <com.wikitude.architect.ArchitectView
-            android:id="@+id/architectView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_gravity="center_horizontal|top">
-
-    </com.wikitude.architect.ArchitectView>
-<!-- 
-            android:layout_weight="50"
- -->
-    
-	<fragment
-        android:id="@+id/map"
-        class="com.google.android.gms.maps.MapFragment"
-        android:layout_below="@+id/architectView"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />
+        android:orientation="vertical" >
 <!-- 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+ -->
+		<FrameLayout
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content" 
+		    android:layout_weight="30" >
+
+			<com.wikitude.architect.ArchitectView
+			    android:id="@+id/architectView"
+			    android:layout_width="fill_parent"
+			    android:layout_height="fill_parent" >
+
+			</com.wikitude.architect.ArchitectView>
+		</FrameLayout>
+	    
+		<fragment
+	        android:id="@+id/map"
+	        class="com.google.android.gms.maps.SupportMapFragment"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+            android:layout_weight="70"
+        />
+
+    </LinearLayout>
+    
+<!-- 
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/architectView"
         android:layout_alignParentBottom="true"
  -->	
     

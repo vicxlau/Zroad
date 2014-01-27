@@ -2,6 +2,7 @@ package com.example.zroad_t1;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.hardware.SensorManager;
 import android.location.Location;
@@ -9,14 +10,22 @@ import android.location.LocationListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.slidinglayer.SlidingLayer;
 import com.wikitude.architect.ArchitectView;
 import com.wikitude.architect.ArchitectView.ArchitectConfig;
@@ -28,7 +37,7 @@ import com.zroad.utils.Constants;
 import java.io.File;
 import java.io.IOException;
 
-public class BlankActivity extends Activity {
+public class BlankActivity extends FragmentActivity {
 
 	protected ArchitectView architectView;
 	protected SensorAccuracyChangeListener	sensorAccuracyListener;
@@ -43,7 +52,30 @@ public class BlankActivity extends Activity {
     private String mStickContainerToRightLeftOrMiddle;
     private boolean mShowShadow;
     private boolean mShowOffset;
+    
+    //Google Maps
+	private GoogleMap map;
+	
+    private static final LatLng MELBOURNE = new LatLng(-37.81319, 144.96298);
+    private static final LatLng SYDNEY = new LatLng(-33.87365, 151.20689);
+    private static final LatLng ADELAIDE = new LatLng(-34.92873, 138.59995);
+    private static final LatLng PERTH = new LatLng(-31.95285, 115.85734);
 
+    private static final LatLng LHR = new LatLng(51.471547, -0.460052);
+    private static final LatLng LAX = new LatLng(33.936524, -118.377686);
+    private static final LatLng JFK = new LatLng(40.641051, -73.777485);
+    private static final LatLng AKL = new LatLng(-37.006254, 174.783018);
+
+    private static final int WIDTH_MAX = 50;
+    private static final int HUE_MAX = 360;
+    private static final int ALPHA_MAX = 255;
+
+    private Polyline mMutablePolyline;
+    private SeekBar mColorBar;
+    private SeekBar mAlphaBar;
+    private SeekBar mWidthBar;
+
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -54,6 +86,8 @@ public class BlankActivity extends Activity {
         bindViews();
         initState();
 
+        initMap();
+        
 		this.setTitle("Zroad");
 		this.architectView = (ArchitectView)this.findViewById( R.id.architectView );
 		final ArchitectConfig config = new ArchitectConfig( Constants.WIKITUDE_SDK_KEY );
@@ -107,6 +141,7 @@ public class BlankActivity extends Activity {
 		return true;
 	}
 
+	
 
 	@Override
 	protected void onResume() {
@@ -178,6 +213,54 @@ public class BlankActivity extends Activity {
 		return EXTRAS_KEY_ACTIVITY_ARCHITECT_WORLD_URL;
 	}
 
+	//Map methods
+	private void initMap(){
+//		map = this.findViewById(R.id.map);
+//		map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
+        // Do a null check to confirm that we have not already instantiated the map.
+        if (map == null) {
+            // Try to obtain the map from the SupportMapFragment.
+            map = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+            // Check if we were successful in obtaining the map.
+            if (map != null) {
+                setUpMap();
+            }
+        }
+	}
+	
+
+    private void setUpMap() {
+
+        // A simple polyline with the default options from Melbourne-Adelaide-Perth.
+        map.addPolyline((new PolylineOptions())
+                .add(MELBOURNE, ADELAIDE, PERTH));
+
+        // A geodesic polyline that goes around the world.
+        map.addPolyline((new PolylineOptions())
+                .add(LHR, AKL, LAX, JFK, LHR)
+                .width(5)
+                .color(Color.BLUE)
+                .geodesic(true));
+
+        // Rectangle centered at Sydney.  This polyline will be mutable.
+        int radius = 5;
+        PolylineOptions options = new PolylineOptions()
+                .add(new LatLng(SYDNEY.latitude + radius, SYDNEY.longitude + radius))
+                .add(new LatLng(SYDNEY.latitude + radius, SYDNEY.longitude - radius))
+                .add(new LatLng(SYDNEY.latitude - radius, SYDNEY.longitude - radius))
+                .add(new LatLng(SYDNEY.latitude - radius, SYDNEY.longitude + radius))
+                .add(new LatLng(SYDNEY.latitude + radius, SYDNEY.longitude + radius));
+        int color = Color.CYAN;
+        mMutablePolyline = map.addPolyline(options
+                .color(color)
+                .width(3));
+
+        // Move the map so that it is centered on the mutable polyline.
+        map.moveCamera(CameraUpdateFactory.newLatLng(SYDNEY));
+    }
+
+	
     //sliding layout
 
     /**

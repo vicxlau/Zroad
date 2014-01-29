@@ -1,16 +1,20 @@
 package com.example.zroad_t1;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.hardware.SensorManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,8 +26,12 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.slidinglayer.SlidingLayer;
@@ -34,11 +42,22 @@ import com.zroad.location.ILocationProvider;
 import com.zroad.location.LocationProvider;
 import com.zroad.utils.Constants;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.json.JSONObject;
 
 public class BlankActivity extends FragmentActivity {
 
+	//region Data Members
 	protected ArchitectView architectView;
 	protected SensorAccuracyChangeListener	sensorAccuracyListener;
 	protected Location lastKnownLocaton;
@@ -56,16 +75,18 @@ public class BlankActivity extends FragmentActivity {
     //Google Maps
 	private GoogleMap map;
 	
-    private static final LatLng MELBOURNE = new LatLng(-37.81319, 144.96298);
-    private static final LatLng SYDNEY = new LatLng(-33.87365, 151.20689);
-    private static final LatLng ADELAIDE = new LatLng(-34.92873, 138.59995);
-    private static final LatLng PERTH = new LatLng(-31.95285, 115.85734);
-
-    private static final LatLng LHR = new LatLng(51.471547, -0.460052);
-    private static final LatLng LAX = new LatLng(33.936524, -118.377686);
-    private static final LatLng JFK = new LatLng(40.641051, -73.777485);
-    private static final LatLng AKL = new LatLng(-37.006254, 174.783018);
-
+	// sample location
+	/*
+	    private static final LatLng MELBOURNE = new LatLng(-37.81319, 144.96298);
+	    private static final LatLng SYDNEY = new LatLng(-33.87365, 151.20689);
+	    private static final LatLng ADELAIDE = new LatLng(-34.92873, 138.59995);
+	    private static final LatLng PERTH = new LatLng(-31.95285, 115.85734);
+	
+	    private static final LatLng LHR = new LatLng(51.471547, -0.460052);
+	    private static final LatLng LAX = new LatLng(33.936524, -118.377686);
+	    private static final LatLng JFK = new LatLng(40.641051, -73.777485);
+	    private static final LatLng AKL = new LatLng(-37.006254, 174.783018);
+	 */
     private static final int WIDTH_MAX = 50;
     private static final int HUE_MAX = 360;
     private static final int ALPHA_MAX = 255;
@@ -74,21 +95,28 @@ public class BlankActivity extends FragmentActivity {
     private SeekBar mColorBar;
     private SeekBar mAlphaBar;
     private SeekBar mWidthBar;
-
+    
+    // Draw walking route
+    private int mMode=0;
+    ArrayList<LatLng> markerPoints;
+    
+    //endregion
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.blank);
-
-        //sliding layout
+		this.setTitle("Zroad");
+		
+        //region init sliding layout
         getPrefs();
         bindViews();
         initState();
-
-        initMap();
+        // endregion
         
-		this.setTitle("Zroad");
+        //initMap();
+        
+		//region init architectView
 		this.architectView = (ArchitectView)this.findViewById( R.id.architectView );
 		final ArchitectConfig config = new ArchitectConfig( Constants.WIKITUDE_SDK_KEY );
 		this.architectView.onCreate( config );
@@ -132,16 +160,75 @@ public class BlankActivity extends FragmentActivity {
 
 		this.architectView.registerSensorAccuracyChangeListener( this.sensorAccuracyListener );
 		this.locationProvider = new LocationProvider( this, this.locationListener );
+		// endregion
+
+		//region init search locations
+		initMarkerPoints();
+		//endregion
+		
+		//region init map components
+		initMap();
+		// Setting onclick event listener for the map
+		map.setOnMapClickListener(new OnMapClickListener() {
+			@Override
+			public void onMapClick(LatLng point) {
+				Log.i("LatLng Info", "Lat: "+point.latitude+"; Lng: "+point.longitude);
+				/*
+
+				// Already two locations
+				if(markerPoints.size()>1){
+					markerPoints.clear();
+					map.clear();
+				}
+
+				// Adding new item to the ArrayList
+				markerPoints.add(point);
+
+				// Draws Start and Stop markers on the Google Map
+				drawStartEndMarkers();
+
+				// Checks, whether start and end locations are captured
+				if(markerPoints.size() >= 2){
+					LatLng origin = markerPoints.get(0);
+					LatLng dest = markerPoints.get(1);
+
+					// Getting URL to the Google Directions API
+					String url = getDirectionsUrl(origin, dest);
+
+					DownloadTask downloadTask = new DownloadTask();
+
+					// Start downloading json data from Google Directions API
+					downloadTask.execute(url);
+				}
+				 */	
+			}
+		});
+		//endregion
+
+	}
+	
+	@Override
+	protected void onPostCreate( final Bundle savedInstanceState ) {
+		super.onPostCreate( savedInstanceState );
+		if ( this.architectView != null ) {
+			this.architectView.onPostCreate();
+		}
+
+		try {
+			this.architectView.load( getARchitectWorldPath() );
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 	}
 
+	//region reaction mechanism
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.blank, menu);
 		return true;
 	}
-
-	
 
 	@Override
 	protected void onResume() {
@@ -195,25 +282,17 @@ public class BlankActivity extends FragmentActivity {
 		}
 	}
 
-	@Override
-	protected void onPostCreate( final Bundle savedInstanceState ) {
-		super.onPostCreate( savedInstanceState );
-		if ( this.architectView != null ) {
-			this.architectView.onPostCreate();
-		}
+	//endregion
 
-		try {
-			this.architectView.load( getARchitectWorldPath() );
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-	}
-	
+	//region ArchitectView Setup
 	public String getARchitectWorldPath() {
 		return EXTRAS_KEY_ACTIVITY_ARCHITECT_WORLD_URL;
 	}
 
-	//Map methods
+	//endregion
+	
+	//region OLD Map Setups
+/*
 	private void initMap(){
 //		map = this.findViewById(R.id.map);
 //		map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
@@ -228,7 +307,6 @@ public class BlankActivity extends FragmentActivity {
             }
         }
 	}
-	
 
     private void setUpMap() {
 
@@ -259,21 +337,176 @@ public class BlankActivity extends FragmentActivity {
         // Move the map so that it is centered on the mutable polyline.
         map.moveCamera(CameraUpdateFactory.newLatLng(SYDNEY));
     }
-
+*/
+	//endregion
 	
-    //sliding layout
+    //region Map Path & Marker Setups
+	private void initMap(){
+		// Getting reference to SupportMapFragment of the activity_main
+		SupportMapFragment fm = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
 
-    /**
-     * View binding
-     */
+		// Getting Map for the SupportMapFragment
+		map = fm.getMap();
+
+		// Enable MyLocation Button in the Map
+		map.setMyLocationEnabled(true);
+
+		// Draws Start and Stop markers on the Google Map
+		drawStartEndMarkers();
+
+		// Checks, whether start and end locations are captured
+		if(markerPoints.size() >= 2){
+			LatLng origin = markerPoints.get(0);
+			LatLng dest = markerPoints.get(1);
+
+			// Getting URL to the Google Directions API
+			String url = getDirectionsUrl(origin, dest);
+
+			DownloadTask downloadTask = new DownloadTask();
+
+			// Start downloading json data from Google Directions API
+			downloadTask.execute(url);
+			
+			// move Map Camera
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLngBounds(markerPoints.get(0),markerPoints.get(1)).getCenter(), 10));
+		    //map.animateCamera(cameraUpdate);
+		    //locationManager.removeUpdates(this);
+		}else if(markerPoints.size()==1){
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(markerPoints.get(0),15));
+		}
+	}
+	
+	private void initMarkerPoints(){
+		markerPoints = new ArrayList<LatLng>();
+		
+//		markerPoints.add(new LatLng(22.318196209668695,114.16893046349287));
+//		markerPoints.add(new LatLng(22.318330198858924,114.1697109863162));
+		
+//		markerPoints.add(new LatLng(22.315196306899683,114.17118653655052));
+//		markerPoints.add(new LatLng(22.323395019978566,114.16967008262873));
+		
+		LocationListener locLtr = new LocationListener(){
+        	@Override
+			public void onLocationChanged(Location loc) {
+				markerPoints.add(new LatLng(loc.getLatitude(),loc.getLongitude()));
+				Log.i("Location Changed", "New Lat: "+loc.getLatitude()+"; New Lng: "+loc.getLongitude());
+//				curLocMgr.requestLocationUpdates(curLocProv, 20000, 0, this);
+			}
+        	
+        	// region unimpletement override methods
+			@Override
+			public void onProviderDisabled(String provider) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onProviderEnabled(String provider) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onStatusChanged(String provider, int status,
+					Bundle extras) {
+				// TODO Auto-generated method stub
+				
+			}
+			//endregion
+        };
+        
+		// current location
+        LocationManager curLocMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+//        String curLocProv = curLocMgr.getBestProvider(criteria, true); // fail
+        String curLocProv = LocationManager.NETWORK_PROVIDER;
+        Location curLoc = curLocMgr.getLastKnownLocation(curLocProv);
+//        Location curLoc = curLocMgr.getLastKnownLocation("gps");
+        
+        while(curLoc == null) { 
+//        	curLocMgr.requestLocationUpdates("gps", 60000, 1, locLtr); 
+        	curLocMgr.requestLocationUpdates(curLocProv, 60000, 1, locLtr); 
+        	Log.e("Current Location", "Current Location is null");
+        }
+        
+        if(curLoc!=null)
+        	Log.i("Current Location", "Cur Lat: "+curLoc.getLatitude()+"; Cur Lng: "+curLoc.getLongitude());
+		
+        //fail klt
+//        markerPoints.add(new LatLng(22.336059989897162,114.17529165744781));
+        
+//        map.setMyLocationEnabled(true);
+//        Location curLoc = map.getMyLocation();
+        
+        Log.i("Get Current Location", "Lat: "+curLoc.getLatitude()+"; Lng: "+curLoc.getLongitude());
+		markerPoints.add(new LatLng(curLoc.getLatitude(),curLoc.getLongitude()));
+	}
+	
+    private void drawStartEndMarkers(){
+    	for(int i=0;i<markerPoints.size();i++){
+    		MarkerOptions opt = new MarkerOptions();
+    		opt.position(markerPoints.get(i));
+
+			if(i==0){
+				opt.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+			}else if(i==1){
+				opt.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+			}
+
+			// Add new marker to the Google Map Android API V2
+			map.addMarker(opt);
+    	}
+    }
+
+    private String getDirectionsUrl(LatLng ori,LatLng dest){
+    	String result = "https://maps.googleapis.com/maps/api/directions/json?origin="
+    					+ori.latitude+","+ori.longitude
+    					+"&destination="
+    					+dest.latitude+","+dest.longitude
+    					+"&sensor=false"					
+						+"&mode=walking";
+    	return result;
+    }
+    
+    private String downloadJson(String strUrl){
+    	String data = "";
+    	InputStream iStream = null;
+    	HttpURLConnection urlCon = null;
+    	try{
+    		URL url = new URL(strUrl);
+    		urlCon = (HttpURLConnection) url.openConnection();
+    		urlCon.connect();
+    		iStream = urlCon.getInputStream();
+    		
+    		BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
+    		StringBuffer sb = new StringBuffer();
+    		String line = "";
+    		while((line=br.readLine())!= null){
+    			sb.append(line);
+    		}
+    		data = sb.toString();
+    		br.close();
+    		
+    		iStream.close();
+    	}catch(Exception e){
+    		Log.d("Exception while donwload url", e.toString()); 
+    	}finally{
+    		urlCon.disconnect();
+    	}
+		return data;
+    }
+    
+    //endregion
+    
+    //region sliding layout methods
+
+    //View binding
     private void bindViews() {
         mSlidingLayer = (SlidingLayer) findViewById(R.id.slidingLayer1);
         swipeText = (TextView) findViewById(R.id.swipeText);
     }
 
-    /**
-     * Get current value for preferences
-     */
+    //Get current value for preferences
     private void getPrefs() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         mStickContainerToRightLeftOrMiddle = prefs.getString("layer_location", "right");
@@ -281,9 +514,7 @@ public class BlankActivity extends FragmentActivity {
         mShowOffset = prefs.getBoolean("layer_has_offset", true);
     }
 
-    /**
-     * Initializes the origin state of the layer
-     */
+    //Initializes the origin state of the layer
     private void initState() {
 
         // Sticks container to right or left
@@ -380,4 +611,100 @@ public class BlankActivity extends FragmentActivity {
         return true;
     }
 
+    //endregion
+
+    //Fetches data from url passed
+    private class DownloadTask extends AsyncTask<String, Void, String>{
+
+    	//Downloading data in non-ui thread
+    	@Override
+    	protected String doInBackground(String... url){
+    		String data="";
+    		try{
+    			data=downloadJson(url[0]);
+    		}catch(Exception e){
+    			Log.d("Background Task", e.toString());
+    		}
+    		return data;
+    	}
+    	
+    	//Executes in UI thread, after the execution of
+    	//doInBackground()
+    	@Override
+    	protected void onPostExecute(String result){
+    		
+    		super.onPostExecute(result);
+    		
+    		ParserTask parserTask = new ParserTask();
+    		
+    		//Invokes the thread for parsing the JSON data
+    		parserTask.execute(result);
+    		
+    	}
+    }
+
+    //A class to parse the Google Places in JSON format
+    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> >{
+
+    	// Parsing the data in non-ui thread
+    	@Override
+    	protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
+
+    		JSONObject jObject;
+    		List<List<HashMap<String, String>>> routes = null;
+
+    		try{
+    			jObject = new JSONObject(jsonData[0]);
+    			DirectionsJSONParser parser = new DirectionsJSONParser();
+
+    			// Starts parsing data
+    			routes = parser.parse(jObject);
+    		}catch(Exception e){
+    			e.printStackTrace();
+    		}
+    		return routes;
+    	}
+
+    	// Executes in UI thread, after the parsing process
+    	@Override
+    	protected void onPostExecute(List<List<HashMap<String, String>>> result) {
+    		ArrayList<LatLng> points = null;
+    		PolylineOptions lineOptions = null;
+    		MarkerOptions markerOptions = new MarkerOptions();
+
+    		// Traversing through all the routes
+    		for(int i=0;i<result.size();i++){
+    			points = new ArrayList<LatLng>();
+    			lineOptions = new PolylineOptions();
+
+    			// Fetching i-th route
+    			List<HashMap<String, String>> path = result.get(i);
+
+    			// Fetching all the points in i-th route
+    			for(int j=0;j<path.size();j++){
+    				HashMap<String,String> point = path.get(j);
+
+    				double lat = Double.parseDouble(point.get("lat"));
+    				double lng = Double.parseDouble(point.get("lng"));
+    				LatLng position = new LatLng(lat, lng);
+
+    				points.add(position);
+    			}
+
+    			// Adding all the points in the route to LineOptions
+    			lineOptions.addAll(points);
+    			lineOptions.width(2);
+    			lineOptions.color(Color.BLUE);
+
+
+    			if(result.size()<1){
+    				Toast.makeText(getBaseContext(), "No Points", Toast.LENGTH_SHORT).show();
+    				return;
+    			}
+
+    			// Drawing polyline in the Google Map for the i-th route
+    			map.addPolyline(lineOptions);
+    		}
+    	}
+    }    	
 }

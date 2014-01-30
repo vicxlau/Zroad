@@ -48,6 +48,14 @@ theme attribute (in the form
 containing a value of this type.
          */
         public static final int adUnitId=0x7f010008;
+        /** <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+         */
+        public static final int buttonBarButtonStyle=0x7f010018;
+        /** <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+         */
+        public static final int buttonBarStyle=0x7f010017;
         /** <p>Must be a floating point value, such as "<code>1.2</code>".
 <p>This may also be a reference to a resource (in the form
 "<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
@@ -227,6 +235,7 @@ containing a value of this type.
         public static final int zOrderOnTop=0x7f010016;
     }
     public static final class color {
+        public static final int black_overlay=0x7f05000a;
         public static final int common_action_bar_splitter=0x7f050009;
         /**  Sign-in Button Colors 
          */
@@ -239,8 +248,8 @@ containing a value of this type.
         public static final int common_signin_btn_light_text_disabled=0x7f050006;
         public static final int common_signin_btn_light_text_focused=0x7f050007;
         public static final int common_signin_btn_light_text_pressed=0x7f050005;
-        public static final int common_signin_btn_text_dark=0x7f05000a;
-        public static final int common_signin_btn_text_light=0x7f05000b;
+        public static final int common_signin_btn_text_dark=0x7f05000b;
+        public static final int common_signin_btn_text_light=0x7f05000c;
     }
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
@@ -295,36 +304,43 @@ containing a value of this type.
         public static final int sidebar_shadow=0x7f020024;
     }
     public static final class id {
-        public static final int action_settings=0x7f040012;
-        public static final int architectView=0x7f04000b;
+        public static final int action_settings=0x7f040016;
+        public static final int architectView=0x7f04000c;
         public static final int auto=0x7f040000;
         public static final int bottom=0x7f040005;
-        public static final int buttonClose=0x7f040010;
-        public static final int buttonOpen=0x7f04000d;
+        public static final int buttonClose=0x7f040011;
+        public static final int buttonOpen=0x7f04000e;
+        public static final int dummy_button=0x7f040013;
+        public static final int fullscreen_content=0x7f04000b;
+        public static final int fullscreen_content_controls=0x7f040012;
         public static final int hybrid=0x7f04000a;
-        public static final int imageView1=0x7f040011;
+        public static final int imageView1=0x7f040015;
         public static final int left=0x7f040002;
-        public static final int map=0x7f04000c;
+        public static final int map=0x7f04000d;
         public static final int middle=0x7f040003;
         public static final int none=0x7f040006;
         public static final int normal=0x7f040007;
         public static final int right=0x7f040001;
         public static final int satellite=0x7f040008;
-        public static final int slidingLayer1=0x7f04000e;
-        public static final int swipeText=0x7f04000f;
+        public static final int slidingLayer1=0x7f04000f;
+        public static final int swipeText=0x7f040010;
         public static final int terrain=0x7f040009;
         public static final int top=0x7f040004;
+        public static final int txt_dest=0x7f040014;
     }
     public static final class integer {
         public static final int google_play_services_version=0x7f070000;
     }
     public static final class layout {
-        public static final int blank=0x7f030000;
-        public static final int main=0x7f030001;
-        public static final int sample_cam=0x7f030002;
+        public static final int activity_direction=0x7f030000;
+        public static final int activity_search=0x7f030001;
+        public static final int blank=0x7f030002;
+        public static final int main=0x7f030003;
+        public static final int sample_cam=0x7f030004;
     }
     public static final class menu {
         public static final int blank=0x7f0b0000;
+        public static final int search=0x7f0b0001;
     }
     public static final class string {
         public static final int action_settings=0x7f06002a;
@@ -426,6 +442,8 @@ containing a value of this type.
         public static final int common_signin_button_text_long=0x7f060013;
         public static final int compass_accuracy_low=0x7f06001b;
         public static final int device_unsupported=0x7f06001d;
+        public static final int dummy_button=0x7f06003e;
+        public static final int dummy_content=0x7f06003f;
         public static final int hello_world=0x7f060022;
         public static final int label_bottom=0x7f060039;
         public static final int label_left=0x7f060036;
@@ -452,7 +470,10 @@ containing a value of this type.
         public static final int swipe_right_label=0x7f060032;
         public static final int swipe_up_label=0x7f060033;
         public static final int title_activity_blank=0x7f060029;
+        public static final int title_activity_direction=0x7f060040;
+        public static final int title_activity_main=0x7f06003d;
         public static final int title_activity_sample1_poi_detail=0x7f060028;
+        public static final int title_activity_search=0x7f06003c;
         public static final int urllauncher_button_launch=0x7f06001f;
         public static final int urllauncher_default_value_textfield=0x7f060021;
         public static final int urllauncher_hint_textfield=0x7f060020;
@@ -485,11 +506,13 @@ containing a value of this type.
  All customizations that are NOT specific to a particular API-level can go here. 
          */
         public static final int AppTheme=0x7f0a0001;
-        /** 
-        <item name="android:background">@drawable/button_red_selector</item>
-        
+        public static final int ButtonBar=0x7f0a0004;
+        public static final int ButtonBarButton=0x7f0a0005;
+        /**          <item name="android:background">@drawable/button_red_selector</item> 
          */
         public static final int ButtonRed=0x7f0a0002;
+        public static final int FullscreenActionBarStyle=0x7f0a0006;
+        public static final int FullscreenTheme=0x7f0a0003;
     }
     public static final class styleable {
         /** Attributes that can be used with a AdsAttrs.
@@ -567,6 +590,46 @@ containing a value of this type.
           @attr name android:adUnitId
         */
         public static final int AdsAttrs_adUnitId = 2;
+        /** 
+         Declare custom theme attributes that allow changing which styles are
+         used for button bars depending on the API level.
+         ?android:attr/buttonBarStyle is new as of API 11 so this is
+         necessary to support previous API levels.
+    
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #ButtonBarContainerTheme_buttonBarButtonStyle com.example.zroad_t1:buttonBarButtonStyle}</code></td><td></td></tr>
+           <tr><td><code>{@link #ButtonBarContainerTheme_buttonBarStyle com.example.zroad_t1:buttonBarStyle}</code></td><td></td></tr>
+           </table>
+           @see #ButtonBarContainerTheme_buttonBarButtonStyle
+           @see #ButtonBarContainerTheme_buttonBarStyle
+         */
+        public static final int[] ButtonBarContainerTheme = {
+            0x7f010017, 0x7f010018
+        };
+        /**
+          <p>This symbol is the offset where the {@link com.example.zroad_t1.R.attr#buttonBarButtonStyle}
+          attribute's value can be found in the {@link #ButtonBarContainerTheme} array.
+
+
+          <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+          @attr name android:buttonBarButtonStyle
+        */
+        public static final int ButtonBarContainerTheme_buttonBarButtonStyle = 1;
+        /**
+          <p>This symbol is the offset where the {@link com.example.zroad_t1.R.attr#buttonBarStyle}
+          attribute's value can be found in the {@link #ButtonBarContainerTheme} array.
+
+
+          <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+          @attr name android:buttonBarStyle
+        */
+        public static final int ButtonBarContainerTheme_buttonBarStyle = 0;
         /** Attributes that can be used with a MapAttrs.
            <p>Includes the following attributes:</p>
            <table>

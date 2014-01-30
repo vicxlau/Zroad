@@ -41,6 +41,7 @@ import com.wikitude.architect.SensorAccuracyChangeListener;
 import com.zroad.location.ILocationProvider;
 import com.zroad.location.LocationProvider;
 import com.zroad.utils.Constants;
+import com.zroad.utils.DirectionsJSONParser;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -222,14 +223,14 @@ public class BlankActivity extends FragmentActivity {
 	}
 
 	//region reaction mechanism
-	
+/*
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.blank, menu);
 		return true;
 	}
-
+*/
 	@Override
 	protected void onResume() {
 		super.onResume();

@@ -304,43 +304,53 @@ containing a value of this type.
         public static final int sidebar_shadow=0x7f020024;
     }
     public static final class id {
-        public static final int action_settings=0x7f040016;
-        public static final int architectView=0x7f04000c;
+        public static final int action_settings=0x7f04001a;
+        public static final int architectView=0x7f04000d;
+        public static final int atv_places=0x7f040015;
         public static final int auto=0x7f040000;
         public static final int bottom=0x7f040005;
-        public static final int buttonClose=0x7f040011;
-        public static final int buttonOpen=0x7f04000e;
-        public static final int dummy_button=0x7f040013;
-        public static final int fullscreen_content=0x7f04000b;
-        public static final int fullscreen_content_controls=0x7f040012;
+        public static final int buttonClose=0x7f040012;
+        public static final int buttonOpen=0x7f04000f;
+        public static final int dummy_button=0x7f040014;
+        public static final int fullscreen_content=0x7f04000c;
+        public static final int fullscreen_content_controls=0x7f040013;
         public static final int hybrid=0x7f04000a;
-        public static final int imageView1=0x7f040015;
+        public static final int imageView1=0x7f040019;
         public static final int left=0x7f040002;
-        public static final int map=0x7f04000d;
+        public static final int map=0x7f04000e;
         public static final int middle=0x7f040003;
         public static final int none=0x7f040006;
         public static final int normal=0x7f040007;
+        public static final int place_autocomplete=0x7f04000b;
         public static final int right=0x7f040001;
         public static final int satellite=0x7f040008;
-        public static final int slidingLayer1=0x7f04000f;
-        public static final int swipeText=0x7f040010;
+        public static final int slidingLayer1=0x7f040010;
+        public static final int swipeText=0x7f040011;
         public static final int terrain=0x7f040009;
+        public static final int textView1=0x7f040017;
         public static final int top=0x7f040004;
-        public static final int txt_dest=0x7f040014;
+        public static final int txt=0x7f040018;
+        public static final int txt_dest=0x7f040016;
     }
     public static final class integer {
         public static final int google_play_services_version=0x7f070000;
     }
     public static final class layout {
-        public static final int activity_direction=0x7f030000;
-        public static final int activity_search=0x7f030001;
-        public static final int blank=0x7f030002;
-        public static final int main=0x7f030003;
-        public static final int sample_cam=0x7f030004;
+        public static final int activity_autocomplete=0x7f030000;
+        public static final int activity_direction=0x7f030001;
+        public static final int activity_search=0x7f030002;
+        public static final int activity_search_text_view=0x7f030003;
+        public static final int blank=0x7f030004;
+        public static final int custom_autocomplete_layout=0x7f030005;
+        public static final int main=0x7f030006;
+        public static final int place_autocomplete_adapter_layout=0x7f030007;
+        public static final int sample_cam=0x7f030008;
     }
     public static final class menu {
-        public static final int blank=0x7f0b0000;
-        public static final int search=0x7f0b0001;
+        public static final int autocomplete=0x7f0b0000;
+        public static final int blank=0x7f0b0001;
+        public static final int search=0x7f0b0002;
+        public static final int search_text_view=0x7f0b0003;
     }
     public static final class string {
         public static final int action_settings=0x7f06002a;
@@ -464,16 +474,19 @@ containing a value of this type.
         public static final int pref_title_show_offset=0x7f06002f;
         public static final int pref_title_show_shadow=0x7f06002e;
         public static final int pref_title_stick_container=0x7f06002d;
+        public static final int str_atv_places=0x7f060041;
         public static final int swipe_down_label=0x7f060034;
         public static final int swipe_label=0x7f060030;
         public static final int swipe_left_label=0x7f060031;
         public static final int swipe_right_label=0x7f060032;
         public static final int swipe_up_label=0x7f060033;
+        public static final int title_activity_autocomplete=0x7f060043;
         public static final int title_activity_blank=0x7f060029;
         public static final int title_activity_direction=0x7f060040;
         public static final int title_activity_main=0x7f06003d;
         public static final int title_activity_sample1_poi_detail=0x7f060028;
         public static final int title_activity_search=0x7f06003c;
+        public static final int title_activity_search_text_view=0x7f060042;
         public static final int urllauncher_button_launch=0x7f06001f;
         public static final int urllauncher_default_value_textfield=0x7f060021;
         public static final int urllauncher_hint_textfield=0x7f060020;

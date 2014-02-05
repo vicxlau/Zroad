@@ -55,7 +55,10 @@
 
         <uses-library android:name="com.google.android.maps" />
 
-        <activity android:name="com.example.zroad_t1.AutocompleteActivity" >
+        <activity
+            android:name="com.example.zroad_t1.DirectionDestActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -78,16 +81,30 @@
             android:name="com.example.zroad_t1.SearchTextViewActivity"
             android:label="@string/title_activity_search_text_view" >
         </activity>
-        <activity
+        <activity
             android:name="com.example.zroad_t1.DirectionActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_direction"
             android:theme="@style/FullscreenTheme" >
         </activity>
-        <!--
-        <activity
+        <activity
             android:name="com.example.zroad_t1.AutocompleteActivity"
             android:label="@string/title_activity_autocomplete" >
+        </activity>
+        <activity
+            android:name="com.example.zroad_t1.FullscreenActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_fullscreen"
+            android:theme="@style/FullscreenTheme" >
+        </activity>
+        <activity
+            android:name="com.example.zroad_t1.SearchDestActivity"
+            android:label="@string/title_activity_current_poi" >
+        </activity>
+        <!--
+        <activity
+            android:name="com.example.zroad_t1.DirectionDestActivity"
+            android:label="@string/title_activity_direction_dest" >
         </activity>
         -->
     </application>

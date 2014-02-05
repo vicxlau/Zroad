@@ -3,7 +3,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:context=".MainActivity" >
-
+	
+		    <AutoCompleteTextView
+		        android:id="@+id/place_autocomplete"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_marginTop="14dp"
+		        android:ems="10"
+		    >
+		
+		        <requestFocus />
+		    </AutoCompleteTextView>
+			
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -12,10 +23,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
  -->
-		<FrameLayout
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content" 
-		    android:layout_weight="30" >
 
 			<com.wikitude.architect.ArchitectView
 			    android:id="@+id/architectView"
@@ -23,16 +30,7 @@
 			    android:layout_height="fill_parent" >
 
 			</com.wikitude.architect.ArchitectView>
-		</FrameLayout>
-	    
-		<fragment
-	        android:id="@+id/map"
-	        class="com.google.android.gms.maps.SupportMapFragment"
-	        android:layout_width="match_parent"
-	        android:layout_height="match_parent"
-            android:layout_weight="70"
-        />
-
+		
     </LinearLayout>
     
 <!-- 
@@ -41,12 +39,6 @@
         android:layout_alignParentBottom="true"
  -->	
     
-    <Button
-            android:id="@+id/buttonOpen"
-            style="@style/ButtonRed"
-            android:onClick="buttonClicked"
-            android:layout_centerInParent="true"
-            android:text="@string/open_button_container" />
 
     <com.slidinglayer.SlidingLayer
             xmlns:slidingLayer="http://schemas.android.com/apk/res/com.slidinglayersample"
@@ -59,34 +51,31 @@
             slidingLayer:stickTo="auto|right|left|middle"
             slidingLayer:closeOnTapEnabled="true">-->
 
-        <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#14ad8f">
-
-            <TextView
-                    android:id="@+id/swipeText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:gravity="center"
-                    android:fontFamily="sans-serif-medium"
-                    android:drawablePadding="15dip"
-                    android:paddingBottom="80dp"
-                    android:textSize="17sp"
-                    android:textColor="#074035"/>
-
-            <Button
-                    android:id="@+id/buttonClose"
-                    style="@style/ButtonRed"
-                    android:onClick="buttonClicked"
-                    android:layout_marginBottom="60dp"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    android:text="@string/close_button_container" />
-
-        </RelativeLayout>
-
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:orientation="vertical"
+            android:background="#14ad8f">
+	        
+		    <Button
+	            android:id="@+id/buttonOpen"
+	            style="@style/ButtonMap"
+	            android:onClick="buttonClicked"
+	            android:layout_width="match_parent"
+	            android:layout_weight="10"
+	            android:text="@string/open_button_container" />
+		            
+			<fragment
+		        android:id="@+id/map"
+		        class="com.google.android.gms.maps.SupportMapFragment"
+		        android:layout_width="match_parent"
+		        android:layout_height="match_parent"
+		        android:layout_weight="90"
+	        />
+			
+		</LinearLayout>
+			
     </com.slidinglayer.SlidingLayer>
 
 </RelativeLayout>

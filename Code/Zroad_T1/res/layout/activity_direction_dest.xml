@@ -1,0 +1,49 @@
+<!--
+	Design from blank.xml 
+ -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".DirectionDestActivity" >
+
+	<com.wikitude.architect.ArchitectView
+	    android:id="@+id/architectView"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent" >
+
+	</com.wikitude.architect.ArchitectView>
+ 
+    <com.slidinglayer.SlidingLayer
+            xmlns:slidingLayer="http://schemas.android.com/apk/res/com.slidinglayersample"
+            android:id="@+id/slidingLayer1"
+            android:layout_width="@dimen/layer_width"
+            android:layout_height="match_parent">
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:orientation="vertical"
+            android:background="#14ad8f">
+	        
+		    <Button
+	            android:id="@+id/buttonOpen"
+	            style="@style/ButtonMap"
+	            android:onClick="buttonClicked"
+	            android:layout_width="match_parent"
+	            android:layout_weight="10"
+	            android:text="@string/open_button_container" />
+		            
+			<fragment
+		        android:id="@+id/map"
+		        class="com.google.android.gms.maps.SupportMapFragment"
+		        android:layout_width="match_parent"
+		        android:layout_height="match_parent"
+		        android:layout_weight="90"
+	        />
+			
+		</LinearLayout>
+			
+    </com.slidinglayer.SlidingLayer>
+
+</RelativeLayout>

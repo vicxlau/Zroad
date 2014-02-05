@@ -68,7 +68,6 @@ public class BlankActivity extends FragmentActivity {
 
     //sliding layout
     private SlidingLayer mSlidingLayer;
-    private TextView swipeText;
     private String mStickContainerToRightLeftOrMiddle;
     private boolean mShowShadow;
     private boolean mShowOffset;
@@ -92,11 +91,6 @@ public class BlankActivity extends FragmentActivity {
     private static final int HUE_MAX = 360;
     private static final int ALPHA_MAX = 255;
 
-    private Polyline mMutablePolyline;
-    private SeekBar mColorBar;
-    private SeekBar mAlphaBar;
-    private SeekBar mWidthBar;
-    
     // Draw walking route
     private int mMode=0;
     ArrayList<LatLng> markerPoints;
@@ -419,13 +413,10 @@ public class BlankActivity extends FragmentActivity {
 		// current location
         LocationManager curLocMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
-//        String curLocProv = curLocMgr.getBestProvider(criteria, true); // fail
         String curLocProv = LocationManager.NETWORK_PROVIDER;
         Location curLoc = curLocMgr.getLastKnownLocation(curLocProv);
-//        Location curLoc = curLocMgr.getLastKnownLocation("gps");
         
         while(curLoc == null) { 
-//        	curLocMgr.requestLocationUpdates("gps", 60000, 1, locLtr); 
         	curLocMgr.requestLocationUpdates(curLocProv, 60000, 1, locLtr); 
         	Log.e("Current Location", "Current Location is null");
         }
@@ -433,12 +424,6 @@ public class BlankActivity extends FragmentActivity {
         if(curLoc!=null)
         	Log.i("Current Location", "Cur Lat: "+curLoc.getLatitude()+"; Cur Lng: "+curLoc.getLongitude());
 		
-        //fail klt
-//        markerPoints.add(new LatLng(22.336059989897162,114.17529165744781));
-        
-//        map.setMyLocationEnabled(true);
-//        Location curLoc = map.getMyLocation();
-        
         Log.i("Get Current Location", "Lat: "+curLoc.getLatitude()+"; Lng: "+curLoc.getLongitude());
 		markerPoints.add(new LatLng(curLoc.getLatitude(),curLoc.getLongitude()));
 	}
@@ -504,13 +489,12 @@ public class BlankActivity extends FragmentActivity {
     //View binding
     private void bindViews() {
         mSlidingLayer = (SlidingLayer) findViewById(R.id.slidingLayer1);
-        swipeText = (TextView) findViewById(R.id.swipeText);
     }
 
     //Get current value for preferences
     private void getPrefs() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        mStickContainerToRightLeftOrMiddle = prefs.getString("layer_location", "right");
+        mStickContainerToRightLeftOrMiddle = prefs.getString("layer_location", "bottom");
         mShowShadow = prefs.getBoolean("layer_has_shadow", true);
         mShowOffset = prefs.getBoolean("layer_has_offset", true);
     }
@@ -558,8 +542,6 @@ public class BlankActivity extends FragmentActivity {
         }
 
         d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-        swipeText.setCompoundDrawables(null, d, null, null);
-        swipeText.setText(getResources().getString(textResource));
         mSlidingLayer.setLayoutParams(rlp);
 
         // Sets the shadow of the container
@@ -582,13 +564,15 @@ public class BlankActivity extends FragmentActivity {
             case R.id.buttonOpen:
                 if (!mSlidingLayer.isOpened()) {
                     mSlidingLayer.openLayer(true);
+                }else{
+                  mSlidingLayer.closeLayer(true);
                 }
                 break;
-            case R.id.buttonClose:
-                if (mSlidingLayer.isOpened()) {
-                    mSlidingLayer.closeLayer(true);
-                }
-                break;
+//            case R.id.buttonClose:
+//                if (mSlidingLayer.isOpened()) {
+//                    mSlidingLayer.closeLayer(true);
+//                }
+//                break;
         }
     }
 

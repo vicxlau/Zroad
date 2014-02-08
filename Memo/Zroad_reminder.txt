@@ -1,0 +1,8 @@
+Zroad Reminders:
+
+- Security issues
+- Clear history/data
+- Fail to
+	- load location
+	- load POIs / path (Low Memory)
+	

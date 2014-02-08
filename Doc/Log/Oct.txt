@@ -1,0 +1,9 @@
+Sep,2013
+- Initialize and finalize the Project Plan 
+- Set up Server
+- Study on Wikitude
+
+Oct,2013
+- Research on User Interface Design, Maps, Location Tracking Technologies
+- Initialize Graphic User Interface
+- Initialize the development of Zroad

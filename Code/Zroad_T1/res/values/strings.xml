@@ -67,6 +67,8 @@
     <string name="AUTOCOMPLETE_API_BASE">https://maps.googleapis.com/maps/api/place/autocomplete/json</string>
     <string name="PLACE_API_BASE">https://maps.googleapis.com/maps/api/place/autocomplete/json</string>
     <string name="title_activity_direction_dest">DirectionDestActivity</string>
+    
+    <string name="search_tb_hint">Search</string>
 
 </resources><!--
 <resources>

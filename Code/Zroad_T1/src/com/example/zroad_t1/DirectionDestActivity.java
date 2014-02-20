@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -32,6 +35,7 @@ import com.wikitude.architect.ArchitectView;
 import com.wikitude.architect.ArchitectView.ArchitectConfig;
 import com.wikitude.architect.SensorAccuracyChangeListener;
 import com.zroad.interfaces.AsyncTaskListener;
+import com.zroad.interfaces.MapHandlerListener;
 import com.zroad.location.ILocationProvider;
 import com.zroad.location.LocationProvider;
 import com.zroad.utils.Constants;
@@ -44,16 +48,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class DirectionDestActivity extends FragmentActivity implements AsyncTaskListener {
+public class DirectionDestActivity extends FragmentActivity implements MapHandlerListener, LocationListener, SensorEventListener {
 
 	//region Data Members
 	protected ArchitectView architectView;
-	protected SensorAccuracyChangeListener	sensorAccuracyListener;
-	protected Location lastKnownLocaton;
-	protected ILocationProvider locationProvider;
-	protected LocationListener locationListener;
+//	protected SensorAccuracyChangeListener	sensorAccuracyListener;
+//	protected Location lastKnownLocaton;
+//	protected ILocationProvider locationProvider;
+//	protected LocationListener locationListener;
 	protected String EXTRAS_KEY_ACTIVITY_ARCHITECT_WORLD_URL = "Webservice"+ File.separator +"index.html";
 
+    private LocationManager locationManager;
+
+    SensorManager sensorManager;
+    private Sensor sensorMagneticField;
+     
+    
     //sliding layout
     private SlidingLayer mSlidingLayer;
     private String mStickContainerToRightLeftOrMiddle;
@@ -62,11 +72,12 @@ public class DirectionDestActivity extends FragmentActivity implements AsyncTask
     
     //Google Maps
 	private GoogleMap map;
-	private MapHandler mapHlr; 
-	private LatLng cur;
-	private LatLng dest = new LatLng(22.321840251346423,114.25903029505503);
+	private MapHandler mapHlr;
+	private LatLng dest;
+	private int counter = 1 ;
+	//= new LatLng(22.321840251346423,114.25903029505503);
 	
-	private final LatLng DEFAULT_CENTER = new LatLng(22.334341616815642,114.17366262290966);
+	private final LatLng DEFAULT_CENTER = Constants.MAP_DEFAULT_CENTER;
 	
     //endregion
     
@@ -80,21 +91,37 @@ public class DirectionDestActivity extends FragmentActivity implements AsyncTask
 		dest = bundle.getParcelable("destination");
 		Log.e("DDA", "Dest: "+dest.latitude+","+dest.longitude);
 
+		//region init sensor settings
+		sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+		sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+		//endregion
+		
+		//region init location settings
+//		initLocationSetting();
+		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		//endregion
+		
 		//region init sliding layout
 		getPrefs();
         bindViews();
         initState();
         // endregion
         
+		//region init map components
+		initMap();
+		//endregion
+		
 		//region init architectView
 		this.architectView = (ArchitectView)this.findViewById( R.id.architectView );
 		final ArchitectConfig config = new ArchitectConfig( Constants.WIKITUDE_SDK_KEY );
 		this.architectView.onCreate( config );
+//		this.architectView.setLocation(mapHlr.getCurrent().latitude, mapHlr.getCurrent().longitude, 1000);
+/*
 		this.sensorAccuracyListener = new SensorAccuracyChangeListener() {
 			@Override
 			public void onCompassAccuracyChanged( int accuracy ) {
-				/* UNRELIABLE = 0, LOW = 1, MEDIUM = 2, Height = 3 */
-				if ( accuracy < SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM && DirectionDestActivity.this != null && !DirectionDestActivity.this.isFinishing() ) {
+				// UNRELIABLE = 0, LOW = 1, MEDIUM = 2, Height = 3
+				if ( accuracy < SensorManager.SENSOR_STATUS_ACCURACY_HIGH && DirectionDestActivity.this != null && !DirectionDestActivity.this.isFinishing() ) {
 					Toast.makeText( DirectionDestActivity.this, R.string.compass_accuracy_low, Toast.LENGTH_LONG ).show();
 				}
 			}
@@ -116,26 +143,24 @@ public class DirectionDestActivity extends FragmentActivity implements AsyncTask
 			@Override
 			public void onLocationChanged( final Location location ) {
 				if (location!=null) {
-					DirectionDestActivity.this.lastKnownLocaton = location;
-				if ( DirectionDestActivity.this.architectView != null ) {
-					if ( location.hasAltitude() ) {
-						DirectionDestActivity.this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.getAltitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
-					} else {
-						DirectionDestActivity.this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
+					DirectionDestActivity.this.lastKnownLocaton = location;					
+					if ( DirectionDestActivity.this.architectView != null ) {
+						if ( location.hasAltitude() ) {
+							DirectionDestActivity.this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.getAltitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
+						} else {
+							DirectionDestActivity.this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.hasAccuracy() ? location.getAccuracy() : 1000 );
+						}
 					}
-				}
+					
+					
 				}
 			}
 		};
-
-		this.architectView.registerSensorAccuracyChangeListener( this.sensorAccuracyListener );
-		this.locationProvider = new LocationProvider( this, this.locationListener );
+ */
+		//this.architectView.registerSensorAccuracyChangeListener( this.sensorAccuracyListener );
+		//this.locationProvider = new LocationProvider( this, this.locationListener );
 		// endregion
 		
-		//region init map components
-		initMap(this);
-		//endregion
-
 	}
 	
 	@Override
@@ -153,17 +178,92 @@ public class DirectionDestActivity extends FragmentActivity implements AsyncTask
 		}
 	}
 
-	//region listeners
+	//region private methods
+	private void initLocationSetting(){
+		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+//		Criteria crta = new Criteria(); 
+//		crta.setAccuracy(Criteria.ACCURACY_FINE); 
+//		crta.setAltitudeRequired(false); 
+//		crta.setBearingRequired(true); 
+//		crta.setCostAllowed(false); 
+//		crta.setPowerRequirement(Criteria.POWER_LOW); 
+//		String provider = locationManager.getBestProvider(crta, true); 
+
+//		Location loc = locationManager.getLastKnownLocation(provider);
+//		setARMapComponent(loc.getLatitude(),loc.getLongitude());
+		
+//		locationManager.requestLocationUpdates( provider,
+//		locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
+
+		locationManager.requestLocationUpdates( LocationManager.NETWORK_PROVIDER,
+                1000,   // 3 sec
+                10f, this);
+	}
+	
+	private void setARMapComponent(Location loc){
+		double lat = loc.getLatitude();
+		double lng = loc.getLongitude();
+		this.architectView.setLocation(lat, lng, 1000);
+		mapHlr.setCurrent(loc);
+		mapHlr.addRouteWithRouteCtr();	
+	}
+	//endregion
+	
+	//region override methods of MapHandlerListener
+	@Override
+	public void onMapHlrLocationChanged(GoogleMap result){
+		map = result;
+//        Toast.makeText(getBaseContext(),"Return map from MapHlr with route",Toast.LENGTH_LONG).show();
+	}
+	//endregion
+	
+	//region override methods of LocationListener
+	@Override
+	public void onLocationChanged(Location location) {
+		Location destLoc = new Location("destination");
+		destLoc.setLatitude(dest.latitude);
+		destLoc.setLongitude(dest.longitude);
+//        Toast.makeText(getBaseContext(),
+		Log.e("Loc Changed",
+        		counter++ + " Bearing:"+location.bearingTo(destLoc)+" Distance: "+location.distanceTo(destLoc)+" Latitude: "+location.getLatitude()+"Longitude: "+location.getLongitude()
+        		);
+//        		,Toast.LENGTH_LONG).show();
+        double lat = location.getLatitude(); 
+        double lng = location.getLongitude(); 
+
+        setARMapComponent(location);
+	}
 
 	@Override
-	public void onTaskComplete(ArrayList<Double> result) {
+	public void onProviderDisabled(String provider) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onTaskComplete(List<List<HashMap<String, String>>> result) {
-		map=mapHlr.addRoute(result);
+	public void onProviderEnabled(String provider) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		// TODO Auto-generated method stub
+		
+	}
+	//endregion
+
+	//region override methods of SensorEventListener
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+//		Log.e("Sensor Changed",mapHlr.getCurrentLoc().);   
+	}
+	
+	@Override
+	public void onAccuracyChanged(Sensor arg0, int arg1) {
+		// TODO Auto-generated method stub
+		
 	}
 	//endregion
 	
@@ -172,14 +272,24 @@ public class DirectionDestActivity extends FragmentActivity implements AsyncTask
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if ( this.architectView != null ) {
+		if(this.architectView!=null){
 			this.architectView.onResume();
 		}
 
-		if ( this.locationProvider != null ) {
-			this.locationProvider.onResume();
+		//onResume is is always called after onStart, even if the app hasn't been paused
+		if(this.sensorManager!=null){
+			sensorManager.registerListener(this,sensorMagneticField,SensorManager.SENSOR_DELAY_NORMAL);
 		}
-
+		if(this.locationManager!=null){
+			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);	
+		}
+//		if ( this.locationProvider != null ) {
+//			this.locationProvider.onResume();
+//		}
+		
+		
+		super.onResume();
+		
         //sliding layout
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -189,12 +299,17 @@ public class DirectionDestActivity extends FragmentActivity implements AsyncTask
 	@Override
 	protected void onPause() {
 		super.onPause();
-		if ( this.architectView != null ) {
+		if(this.architectView!=null){
 			this.architectView.onPause();
 		}
-		if ( this.locationProvider != null ) {
-			this.locationProvider.onPause();
+
+		if(this.sensorManager!=null){
+			sensorManager.unregisterListener(this,sensorMagneticField);
 		}
+		  
+//		if ( this.locationProvider != null ) {
+//			this.locationProvider.onPause();
+//		}
 	}
 	
 	@Override
@@ -205,18 +320,21 @@ public class DirectionDestActivity extends FragmentActivity implements AsyncTask
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if ( this.architectView != null ) {
-			if ( this.sensorAccuracyListener != null ) {
-				this.architectView.unregisterSensorAccuracyChangeListener( this.sensorAccuracyListener );
-			}
+		if(this.architectView!=null){
+//			if ( this.sensorAccuracyListener != null ) {
+//				this.architectView.unregisterSensorAccuracyChangeListener( this.sensorAccuracyListener );
+//			}
 			this.architectView.onDestroy();
+		}
+		if(this.sensorManager!=null){
+			sensorManager.unregisterListener(this,sensorMagneticField);
 		}
 	}
 
 	@Override
 	public void onLowMemory() {
 		super.onLowMemory();
-		if ( this.architectView != null ) {
+		if(this.architectView!=null){
 			this.architectView.onLowMemory();
 		}
 	}
@@ -231,15 +349,19 @@ public class DirectionDestActivity extends FragmentActivity implements AsyncTask
 	//endregion
 		
     //region Map Path & Marker Setups
-	private void initMap(Context c){
+	private void initMap(){
 		map = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-		mapHlr = new MapHandler(map,c);
+		mapHlr = new MapHandler(map,this);
 		map = mapHlr.initMap();
-		map = mapHlr.setDest(dest);
+		mapHlr.setDestination(dest);
+		
 		map.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_CENTER, 14));
-		RouteInfoController routeCtr = new RouteInfoController(mapHlr.getCurrent(),mapHlr.getDestination(),this);
-		routeCtr.execute("");
-//		map = mapHlr.setDest(dest);
+		/*
+		mapHlr = new MapHandler(map,c);
+		mapHlr.addRouteWithRouteCtr();
+		*/
+//		RouteInfoController routeCtr = new RouteInfoController(mapHlr.getCurrent(),mapHlr.getDestination(),this);
+//		routeCtr.execute("");
 	}
 /*	
 	private void getCurrentLocation(){

@@ -1,5 +1,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
+    <item android:id="@+id/place_autocomplete"   
+        android:title="@string/search_tb_hint"
+        android:icon="@android:drawable/ic_menu_search"   
+        android:showAsAction="always"  
+		android:layout_width="wrap_content"
+        android:actionViewClass="android.widget.AutoCompleteTextView"
+        />
+    <item android:id="@+id/search_btn"    
+        android:title="@string/search_tb_hint"  
+	    android:src="@drawable/right_arrow"
+        android:showAsAction="always"  
+        android:actionViewClass="android.widget.ImageButton"
+        />
+<!-- 
+        android:background="@drawable/noborder"
+ -->   
+    
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"

@@ -1,6 +1,7 @@
 // holds server information
 var ServerInformation = {
-	POIDATA_SERVER: "http://example.wikitude.com/GetSamplePois/",
+	POIDATA_SERVER: "http://144.214.121.5/",
+	//POIDATA_SERVER: "http://example.wikitude.com/GetSamplePois/",
 	POIDATA_SERVER_ARG_LAT: "lat",
 	POIDATA_SERVER_ARG_LON: "lon",
 	POIDATA_SERVER_ARG_NR_POIS: "nrPois"
@@ -67,7 +68,8 @@ var World = {
 
 	// request POI data
 	requestDataFromServer: function requestDataFromServerFn(lat, lon) {
-		var serverUrl = ServerInformation.POIDATA_SERVER + "?" + ServerInformation.POIDATA_SERVER_ARG_LAT + "=" + lat + "&" + ServerInformation.POIDATA_SERVER_ARG_LON + "=" + lon + "&" + ServerInformation.POIDATA_SERVER_ARG_NR_POIS + "=20";
+		//var serverUrl = ServerInformation.POIDATA_SERVER + "?" + ServerInformation.POIDATA_SERVER_ARG_LAT + "=" + lat + "&" + ServerInformation.POIDATA_SERVER_ARG_LON + "=" + lon + "&" + ServerInformation.POIDATA_SERVER_ARG_NR_POIS + "=20";
+		var serverUrl = ServerInformation.POIDATA_SERVER;
 		var jqxhr = $.getJSON(serverUrl, function(data) {
 			World.loadPoisFromJsonData(data);
 		})

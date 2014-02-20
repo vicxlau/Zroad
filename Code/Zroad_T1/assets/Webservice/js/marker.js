@@ -27,12 +27,12 @@ function Marker(poiData) {
     });
 
 
-    this.titleLabel = new AR.Label(poiData.title.trunc(10), 1, {
+    this.titleLabel = new AR.Label(poiData.title, 0.3, {
         zOrder: 1,
         offsetY: 0.55,
         style: {
             textColor: '#FFFFFF',
-            fontStyle: AR.CONST.FONT_STYLE.BOLD
+            fontStyle: AR.CONST.FONT_STYLE.NORMAL
         }
     });
 

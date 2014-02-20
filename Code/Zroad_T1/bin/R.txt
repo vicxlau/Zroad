@@ -80,9 +80,13 @@ int drawable ic_plusone_small_off_client 0x7f020021
 int drawable ic_plusone_standard_off_client 0x7f020022
 int drawable ic_plusone_tall_off_client 0x7f020023
 int drawable main_screen_rocket 0x7f020024
-int drawable right_arrow 0x7f020025
-int drawable sidebar_shadow 0x7f020026
-int drawable up_arrow 0x7f020027
+int drawable noborder 0x7f020025
+int drawable ovalborder 0x7f020026
+int drawable right_arrow 0x7f020027
+int drawable roundborder 0x7f020028
+int drawable sidebar_shadow 0x7f020029
+int drawable up_arrow 0x7f02002a
+int drawable zroad_launcher 0x7f02002b
 int id action_settings 0x7f04001b
 int id architectView 0x7f04000d
 int id atv_places 0x7f040015
@@ -184,6 +188,7 @@ int string pref_go 0x7f06003b
 int string pref_title_show_offset 0x7f06002f
 int string pref_title_show_shadow 0x7f06002e
 int string pref_title_stick_container 0x7f06002d
+int string search_tb_hint 0x7f06004a
 int string str_atv_places 0x7f060041
 int string swipe_down_label 0x7f060034
 int string swipe_label 0x7f060030

@@ -1,6 +1,11 @@
 package com.zroad.utils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -14,22 +19,41 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.zroad.interfaces.AsyncTaskListener;
+import com.zroad.interfaces.MapHandlerListener;
 
-public class MapHandler {
+public class MapHandler implements AsyncTaskListener {
+	
+	final String LOG_TAG = "MapHandler";
+	
 	LatLng bound1 = new LatLng(22.321534053237787,114.16566754456949);
 	LatLng bound2 = new LatLng(22.317067780105184,114.17223359223794);
 	
 	GoogleMap map;
-	Context mapCon;
-	LatLng cur;
+//	Context mapCon;
+	Location curLoc;
 	LatLng dest;
+	MapHandlerListener listener;
 	
-	public MapHandler(GoogleMap m,Context c){
+	public MapHandler(GoogleMap m,MapHandlerListener act){
 		map=m;
-		mapCon=c;
-		cur=getCurrentLocation();
+		listener = (MapHandlerListener)act;
+//		mapCon=c;
 	}
 
+	public Location getCurrentLoc(){
+		return curLoc;
+	}
+	
+	public LatLng getCurrent(){
+		return new LatLng(curLoc.getLatitude(),curLoc.getLongitude());
+	}
+	
+	public LatLng getDestination(){
+		return dest;
+	}
+	
 	public GoogleMap initMap(){
 		// Enable MyLocation Button in the Map
 		map.setMyLocationEnabled(true);
@@ -39,14 +63,65 @@ public class MapHandler {
 		return map;
 	}
 
-	public GoogleMap setDest(double lat,double lng){
-		addDestMarker(new LatLng(lat,lng));
+	public GoogleMap setCurrent(Location loc){
+		curLoc = loc;
 		return map;
 	}
 	
-	public GoogleMap setDest(LatLng point){
-		addDestMarker(point);
+	public GoogleMap setDestination(double lat,double lng){
+		return setDestination(new LatLng(lat,lng));
+	}
+	
+	public GoogleMap setDestination(LatLng point){
+		dest = point;
 		return map;
+	}
+
+	public GoogleMap addRoute(List<List<HashMap<String,String>>> result){
+		addDestMarker(dest);
+		
+		ArrayList<LatLng> points = null;
+		PolylineOptions lineOptions = null;
+		MarkerOptions markerOptions = new MarkerOptions();
+
+		// Traversing through all the routes
+		for(int i=0;i<result.size();i++){
+			points = new ArrayList<LatLng>();
+			lineOptions = new PolylineOptions();
+
+			// Fetching i-th route
+			List<HashMap<String, String>> path = result.get(i);
+
+			// Fetching all the points in i-th route
+			for(int j=0;j<path.size();j++){
+				HashMap<String,String> point = path.get(j);
+
+				double lat = Double.parseDouble(point.get("lat"));
+				double lng = Double.parseDouble(point.get("lng"));
+				LatLng position = new LatLng(lat, lng);
+
+				points.add(position);
+			}
+
+			// Adding all the points in the route to LineOptions
+			lineOptions.addAll(points);
+			lineOptions.width(2);
+			lineOptions.color(Color.BLUE);
+
+			// Drawing polyline in the Google Map for the i-th route
+			map.addPolyline(lineOptions);
+		}
+		return map;
+	}
+	
+	public void addRouteWithRouteCtr(){
+		if(curLoc!=null && dest!=null){
+			addDestMarker(dest);
+			RouteInfoController routeCtr = new RouteInfoController(new LatLng(curLoc.getLatitude(),curLoc.getLongitude()),dest,this);
+			routeCtr.execute("");
+		}else{
+			Log.e(LOG_TAG, "No cur / dest for drawing route");
+		}
 	}
 
 	//region private methods 
@@ -65,9 +140,9 @@ public class MapHandler {
 		destMark.title("Position");
 		destMark.snippet("Latitude:"+point.latitude+",Longitude:"+point.longitude);
 		
-		// Destination Marker
+		// Current Marker
 		MarkerOptions curMark = new MarkerOptions();
-		curMark.position(getCurrentLocation());
+		curMark.position(new LatLng(curLoc.getLatitude(),curLoc.getLongitude()));
 
 		// Adding the marker in the Google Map
 		map.clear();
@@ -75,53 +150,54 @@ public class MapHandler {
 		map.addMarker(destMark);
 
 	}
-	
-	private LatLng getCurrentLocation(){
 		
-		LocationListener locLtr = new LocationListener(){
-        	@Override
-			public void onLocationChanged(Location loc) {
-				Log.i("Location Changed", "New Lat: "+loc.getLatitude()+"; New Lng: "+loc.getLongitude());
-//				curLocMgr.requestLocationUpdates(curLocProv, 20000, 0, this);
-			}
-        	
-        	// region unimpletement override methods
-			@Override
-			public void onProviderDisabled(String provider) {
-				// TODO Auto-generated method stub
-				
-			}
+	private void drawRoute(List<List<HashMap<String,String>>> result){
 
-			@Override
-			public void onProviderEnabled(String provider) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void onStatusChanged(String provider, int status,
-					Bundle extras) {
-				// TODO Auto-generated method stub
-				
-			}
-			//endregion
-        };
-        
-		// current location
-        LocationManager curLocMgr = (LocationManager) mapCon.getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        String curLocProv = LocationManager.NETWORK_PROVIDER;
-        Location curLoc = curLocMgr.getLastKnownLocation(curLocProv);
-        
-        while(curLoc == null) { 
-        	curLocMgr.requestLocationUpdates(curLocProv, 60000, 1, locLtr); 
-        	Log.e("Current Location", "Current Location is null");
-        }
-        
-        if(curLoc!=null)
-        	Log.i("Current Location", "Cur Lat: "+curLoc.getLatitude()+"; Cur Lng: "+curLoc.getLongitude());
+		ArrayList<LatLng> points = null;
+		PolylineOptions lineOptions = null;
+		MarkerOptions markerOptions = new MarkerOptions();
 		
-		return new LatLng(curLoc.getLatitude(),curLoc.getLongitude());
+		// Traversing through all the routes
+		for(int i=0;i<result.size();i++){
+			points = new ArrayList<LatLng>();
+			lineOptions = new PolylineOptions();
+			
+			// Fetching i-th route
+			List<HashMap<String, String>> path = result.get(i);
+			
+			// Fetching all the points in i-th route
+			for(int j=0;j<path.size();j++){
+				HashMap<String,String> point = path.get(j);
+				
+				double lat = Double.parseDouble(point.get("lat"));
+				double lng = Double.parseDouble(point.get("lng"));
+				LatLng position = new LatLng(lat, lng);
+				
+				points.add(position);
+			}
+			
+			// Adding all the points in the route to LineOptions
+			lineOptions.addAll(points);
+			lineOptions.width(2);
+			lineOptions.color(Color.BLUE);
+			
+			// Drawing polyline in the Google Map for the i-th route
+			map.addPolyline(lineOptions);
+		}
 	}
 	//endregion
+
+	//region override methods of AsyncTaskListener
+	@Override
+	public void onTaskComplete(ArrayList<Double> result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onTaskComplete(List<List<HashMap<String, String>>> result) {
+		drawRoute(result);
+		listener.onMapHlrLocationChanged(map);
+		//cannot go back to DDA!!!!
+	}
 }

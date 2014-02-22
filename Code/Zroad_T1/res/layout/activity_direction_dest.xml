@@ -24,8 +24,8 @@
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
 	        android:orientation="vertical"
-            android:background="#14ad8f">
-	        
+            android:background="#00ffffff">
+<!-- 
 		    <Button
 	            android:id="@+id/buttonOpen"
 	            style="@style/ButtonMap"
@@ -33,6 +33,15 @@
 	            android:layout_width="match_parent"
 	            android:layout_weight="10"
 	            android:text="@string/open_button_container" />
+		        
+		        android:src="@drawable/up_arrow" 
+ -->	        
+ 			<ImageButton
+		        android:id="@+id/buttonOpen"
+		        android:layout_width="50dp"
+		        android:layout_height="50dp"
+		        android:background="@drawable/up_arrow"
+		        />
 		            
 			<fragment
 		        android:id="@+id/map"

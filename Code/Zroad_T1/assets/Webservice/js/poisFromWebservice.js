@@ -13,6 +13,7 @@ var World = {
 	markerDrawable_idle: null,
 	markerDrawable_selected: null,
 	markerDrawable_directionIndicator: null,
+	//markerDrawable_zroadDirection: null,
 
 	markerList: [],
 
@@ -24,7 +25,9 @@ var World = {
 		World.markerDrawable_idle = new AR.ImageResource("assets/marker_idle.png"),
 		World.markerDrawable_selected = new AR.ImageResource("assets/marker_selected.png"),
 		World.markerDrawable_directionIndicator = new AR.ImageResource("assets/indi.png"),
-
+		//World.markerDrawable_zroadDirection = new AR.ImageResource("assets/indi.png"),
+		
+		//document.getElementById().src = new AR.ImageResource("assets/indi.png"),
 		document.getElementById("statusElement").innerHTML = 'Loading JSON objects';
 
 		for (var i = 0; i < poiData.length; i++) {

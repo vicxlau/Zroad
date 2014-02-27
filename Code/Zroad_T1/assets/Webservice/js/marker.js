@@ -44,7 +44,13 @@ function Marker(poiData) {
         }
     });
 
-
+	/*
+	// Add ZroadDirection arrow
+	this.zroadDirection = new AR.ImageDrawable(World.markerDrawable_zroadDirection,0.5,{
+		offsetX : 0.5,
+		offsetY : 0.5
+	});
+	*/
     // New: Direction Indicator
     this.directionIndicatorDrawable = new AR.ImageDrawable(World.markerDrawable_directionIndicator, 0.5, {
         enabled: false

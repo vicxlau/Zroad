@@ -22,7 +22,7 @@ public class AutoCompleteController {
 //	final String AUTOCOMPLETE_API_BASE= Resources.getSystem().getString(R.string.AUTOCOMPLETE_API_BASE);
 //	final String GOOGLE_API_KEY = Resources.getSystem().getString(R.string.GOOGLE_API_KEY);
 	final String AUTOCOMPLETE_API_BASE="https://maps.googleapis.com/maps/api/place/autocomplete/json";
-	final String GOOGLE_API_KEY = "AIzaSyBhfUqAFsL5gjvpwsYTLmfGo9_2f5fAF8Y";
+	final String GOOGLE_API_KEY = Constants.GOOGLE_API_KEY;
 	final String LOG_TAG = "AutoCompleteController";
 	ArrayList<String> autocomplete_list;
 	ArrayList<String> ref_list;

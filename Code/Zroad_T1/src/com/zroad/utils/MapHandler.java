@@ -13,9 +13,12 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.zroad_t1.R;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -25,16 +28,24 @@ import com.zroad.interfaces.MapHandlerListener;
 
 public class MapHandler implements AsyncTaskListener {
 	
+	//region Data Members
 	final String LOG_TAG = "MapHandler";
+	final private LatLng DEFAULT_CENTER = Constants.MAP_DEFAULT_CENTER;
+	final BitmapDescriptor MARKER_ICON = BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher); 
+//	LatLng bound1 = new LatLng(22.321534053237787,114.16566754456949);
+//	LatLng bound2 = new LatLng(22.317067780105184,114.17223359223794);
+		
+	private GoogleMap map;
+	private Location curLoc;
+	private LatLng dest;
+	private MapHandlerListener listener;
+
+	private ArrayList<LatLng> routes;
+	private int curRouteIndex;
+//	private LatLngBounds curLeg;
+//	private Context mapCon; // For getting current location here
 	
-	LatLng bound1 = new LatLng(22.321534053237787,114.16566754456949);
-	LatLng bound2 = new LatLng(22.317067780105184,114.17223359223794);
-	
-	GoogleMap map;
-//	Context mapCon;
-	Location curLoc;
-	LatLng dest;
-	MapHandlerListener listener;
+	//endregion
 	
 	public MapHandler(GoogleMap m,MapHandlerListener act){
 		map=m;
@@ -42,43 +53,26 @@ public class MapHandler implements AsyncTaskListener {
 //		mapCon=c;
 	}
 
-	public Location getCurrentLoc(){
-		return curLoc;
-	}
-	
-	public LatLng getCurrent(){
-		return new LatLng(curLoc.getLatitude(),curLoc.getLongitude());
-	}
-	
-	public LatLng getDestination(){
-		return dest;
-	}
-	
+	//region public methods
 	public GoogleMap initMap(){
-		// Enable MyLocation Button in the Map
-		map.setMyLocationEnabled(true);
-
 		// Set the camera to the greatest possible zoom level that includes the bounds
 //		map.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(bound1,bound2), 0));
-		return map;
+		
+		// Enable MyLocation Button in the Map
+		map.setMyLocationEnabled(true);
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_CENTER, 17));
+		curRouteIndex = 1;
+	    return map;
 	}
 
-	public GoogleMap setCurrent(Location loc){
-		curLoc = loc;
+	public GoogleMap showDestMarker(){
+		addDestMarker(true);
 		return map;
 	}
 	
-	public GoogleMap setDestination(double lat,double lng){
-		return setDestination(new LatLng(lat,lng));
-	}
-	
-	public GoogleMap setDestination(LatLng point){
-		dest = point;
-		return map;
-	}
-
-	public GoogleMap addRoute(List<List<HashMap<String,String>>> result){
-		addDestMarker(dest);
+	public GoogleMap addRoute_(List<List<HashMap<String,String>>> result){
+		addDestMarker(false);
+		addCurMarker();
 		
 		ArrayList<LatLng> points = null;
 		PolylineOptions lineOptions = null;
@@ -116,49 +110,97 @@ public class MapHandler implements AsyncTaskListener {
 	
 	public void addRouteWithRouteCtr(){
 		if(curLoc!=null && dest!=null){
-			addDestMarker(dest);
+			addDestMarker(false);
+			addCurMarker();
 			RouteInfoController routeCtr = new RouteInfoController(new LatLng(curLoc.getLatitude(),curLoc.getLongitude()),dest,this);
 			routeCtr.execute("");
 		}else{
 			Log.e(LOG_TAG, "No cur / dest for drawing route");
 		}
 	}
+	
+	public LatLng updateIndicatorTarget(){
+		return setCurrentLeg();
+	}
+	//endregion
+	
+	//region Get Methods
+	public Location getCurrentLoc(){
+		return curLoc;
+	}
+	
+	public LatLng getCurrent(){
+		return new LatLng(curLoc.getLatitude(),curLoc.getLongitude());
+	}
+	
+	public LatLng getDestination(){
+		return dest;
+	}
+	//endregion
 
+	//region Set Methods
+	public GoogleMap setCurrent(Location loc){
+		curLoc = loc;
+		return map;
+	}
+	
+	public GoogleMap setDestination(double lat,double lng){
+		return setDestination(new LatLng(lat,lng));
+	}
+	
+	public GoogleMap setDestination(LatLng point){
+		dest = point;
+		return map;
+	}
+	//endregion
+	
 	//region private methods 
-	private void addDestMarker(LatLng point){
-
-		CameraUpdate cameraPosition = CameraUpdateFactory.newLatLng(point);
-		CameraUpdate cameraZoom = CameraUpdateFactory.zoomBy(12);
-
-		// Showing the user input location in the Google Map
-		map.moveCamera(cameraPosition);
-//		map.animateCamera(cameraZoom);
-
-		// Destination Marker
-		MarkerOptions destMark = new MarkerOptions();
-		destMark.position(point);
-		destMark.title("Position");
-		destMark.snippet("Latitude:"+point.latitude+",Longitude:"+point.longitude);
-		
-		// Current Marker
-		MarkerOptions curMark = new MarkerOptions();
-		curMark.position(new LatLng(curLoc.getLatitude(),curLoc.getLongitude()));
-
-		// Adding the marker in the Google Map
-		map.clear();
-		map.addMarker(curMark);
-		map.addMarker(destMark);
-
+	private void addDestMarker(boolean draggable){
+		if(dest!=null){
+			CameraUpdate cameraPosition = CameraUpdateFactory.newLatLng(dest);
+			CameraUpdate cameraZoom = CameraUpdateFactory.zoomBy(12);
+	
+			// Showing the user input location in the Google Map
+			map.moveCamera(cameraPosition);
+	//		map.animateCamera(cameraZoom);
+	
+			// Destination Marker
+			MarkerOptions destMark = new MarkerOptions();
+			destMark.position(dest);
+			destMark.draggable(draggable);
+			destMark.icon(MARKER_ICON);
+//			destMark.title("Position");
+//			destMark.snippet("Latitude:"+dest.latitude+",Longitude:"+dest.longitude);
+	
+			// Adding the marker in the Google Map
+			map.clear();
+			map.addMarker(destMark);
+		}else{
+			Log.e(LOG_TAG, "Dest is null @addDestMarker()");
+		}
+	}
+	
+	private void addCurMarker(){
+		if(curLoc!=null){
+			// Current Marker
+			MarkerOptions curMark = new MarkerOptions();
+			curMark.position(new LatLng(curLoc.getLatitude(),curLoc.getLongitude()));
+			curMark.icon(MARKER_ICON);
+			map.addMarker(curMark);
+		}else{
+			Log.e(LOG_TAG, "CurLoc is null @addCurMarker()");
+		}
 	}
 		
 	private void drawRoute(List<List<HashMap<String,String>>> result){
 
 		ArrayList<LatLng> points = null;
 		PolylineOptions lineOptions = null;
-		MarkerOptions markerOptions = new MarkerOptions();
 		
 		// Traversing through all the routes
 		for(int i=0;i<result.size();i++){
+//			if(i==1)curRouteIndex=i;
+
 			points = new ArrayList<LatLng>();
 			lineOptions = new PolylineOptions();
 			
@@ -181,10 +223,32 @@ public class MapHandler implements AsyncTaskListener {
 			lineOptions.width(2);
 			lineOptions.color(Color.BLUE);
 			
+			routes = points;
 			// Drawing polyline in the Google Map for the i-th route
 			map.addPolyline(lineOptions);
 		}
 	}
+
+	private LatLngBounds getCurBound(){
+//		return new LatLngBounds(routes.get(curRouteIndex),routes.get(curRouteIndex+1));
+		return LatLngBounds.builder().include(routes.get(curRouteIndex)).include(routes.get(curRouteIndex+1)).build();
+	}
+	
+	private LatLng setCurrentLeg(){
+		Log.e(LOG_TAG, "before getCurBound()");
+		if(!getCurBound().contains(getCurrent())){
+//			Method 1
+//			int ind1 = routes.indexOf(curLeg.northeast);
+//			int ind2 = routes.indexOf(curLeg.southwest);
+//			int index = ind1>ind2?ind1:ind2;
+//			curLeg = new LatLngBounds(routes.get(index), routes.get(index+1));
+//			return routes.get(index+1);
+			
+			curRouteIndex++;			
+		}
+		return routes.get(curRouteIndex+1);
+	}
+	
 	//endregion
 
 	//region override methods of AsyncTaskListener

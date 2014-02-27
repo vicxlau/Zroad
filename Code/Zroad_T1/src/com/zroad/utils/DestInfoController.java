@@ -18,7 +18,7 @@ import android.util.Log;
 
 public class DestInfoController extends android.os.AsyncTask<String,Void, String>{
 	private final String PLACES_API_BASE="https://maps.googleapis.com/maps/api/place/details/json?sensor=false";
-	private final String GOOGLE_API_KEY = "AIzaSyBhfUqAFsL5gjvpwsYTLmfGo9_2f5fAF8Y";
+	private final String GOOGLE_API_KEY = Constants.GOOGLE_API_KEY;
 	private final String LOG_TAG = "DestInfoController";
 	
 	private AsyncTaskListener listener;

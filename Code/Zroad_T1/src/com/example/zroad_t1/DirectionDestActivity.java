@@ -60,10 +60,9 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 
     private LocationManager locationManager;
 
-    SensorManager sensorManager;
-    private Sensor sensorMagneticField;
+    private SensorManager sensorManager;
+//    private Sensor sensorMagneticField;
      
-    
     //sliding layout
     private SlidingLayer mSlidingLayer;
     private String mStickContainerToRightLeftOrMiddle;
@@ -75,6 +74,10 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 	private MapHandler mapHlr;
 	private LatLng dest;
 	private int counter = 1 ;
+	private double bearing_to_target;
+	private LatLng curIndicatorTarget;
+	private Boolean flagLocInit = true;
+	
 	//= new LatLng(22.321840251346423,114.25903029505503);
 	
 	private final LatLng DEFAULT_CENTER = Constants.MAP_DEFAULT_CENTER;
@@ -92,8 +95,6 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 		Log.e("DDA", "Dest: "+dest.latitude+","+dest.longitude);
 
 		//region init sensor settings
-		sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-		sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 		//endregion
 		
 		//region init location settings
@@ -160,7 +161,9 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 		//this.architectView.registerSensorAccuracyChangeListener( this.sensorAccuracyListener );
 		//this.locationProvider = new LocationProvider( this, this.locationListener );
 		// endregion
-		
+
+        // initialize your android device sensor capabilities
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 	}
 	
 	@Override
@@ -201,12 +204,11 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
                 10f, this);
 	}
 	
-	private void setARMapComponent(Location loc){
+	private void setARComponent(Location loc){
 		double lat = loc.getLatitude();
 		double lng = loc.getLongitude();
 		this.architectView.setLocation(lat, lng, 1000);
-		mapHlr.setCurrent(loc);
-		mapHlr.addRouteWithRouteCtr();	
+
 	}
 	//endregion
 	
@@ -214,6 +216,9 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 	@Override
 	public void onMapHlrLocationChanged(GoogleMap result){
 		map = result;
+		curIndicatorTarget = mapHlr.updateIndicatorTarget();
+		Log.e("Init indicatorTarget",curIndicatorTarget.latitude+" VS "+dest.latitude);
+
 //        Toast.makeText(getBaseContext(),"Return map from MapHlr with route",Toast.LENGTH_LONG).show();
 	}
 	//endregion
@@ -221,18 +226,36 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 	//region override methods of LocationListener
 	@Override
 	public void onLocationChanged(Location location) {
-		Location destLoc = new Location("destination");
-		destLoc.setLatitude(dest.latitude);
-		destLoc.setLongitude(dest.longitude);
-//        Toast.makeText(getBaseContext(),
-		Log.e("Loc Changed",
-        		counter++ + " Bearing:"+location.bearingTo(destLoc)+" Distance: "+location.distanceTo(destLoc)+" Latitude: "+location.getLatitude()+"Longitude: "+location.getLongitude()
-        		);
-//        		,Toast.LENGTH_LONG).show();
-        double lat = location.getLatitude(); 
-        double lng = location.getLongitude(); 
+        setARComponent(location);
 
-        setARMapComponent(location);
+		mapHlr.setCurrent(location);
+		if(flagLocInit){
+			mapHlr.addRouteWithRouteCtr();
+			flagLocInit=false;
+		}else{
+			curIndicatorTarget = mapHlr.updateIndicatorTarget();
+			Log.e("update indicatorTarget",curIndicatorTarget.latitude+" VS "+dest.latitude);
+
+			Location TargetLoc = new Location("destination");
+			TargetLoc.setLatitude(curIndicatorTarget.latitude);
+			TargetLoc.setLongitude(curIndicatorTarget.longitude);
+			
+			double lat = location.getLatitude(); 
+			double lng = location.getLongitude();
+			double dist = location.distanceTo(TargetLoc);
+			bearing_to_target = location.bearingTo(TargetLoc);
+			Log.e("Loc Changed",
+					counter++ + " Bearing:"+bearing_to_target+" Distance: "+dist+" Latitude: "+lat+"Longitude: "+lng
+					);
+		}
+        
+		
+//        Toast.makeText(getBaseContext(),
+//        		,Toast.LENGTH_LONG).show();
+
+        
+//        this.architectView.callJavascript("changeStatus('hello');");
+//        this.architectView.callJavascript("rotateZroadIndicator("+(counter*20)+");");
 	}
 
 	@Override
@@ -257,7 +280,42 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 	//region override methods of SensorEventListener
 	@Override
 	public void onSensorChanged(SensorEvent event) {
-//		Log.e("Sensor Changed",mapHlr.getCurrentLoc().);   
+//		Log.e("Sensor Changed",mapHlr.getCurrentLoc().);
+//	        Log.i("aa", event.values[0]+"");
+		
+
+//		Log.e("Sensor Changed",event.values[0]+"");
+//	    // get the angle around the z-axis rotated
+//	    float degree = Math.round(bearing_to_dest - event.values[0]);
+//	    Log.e("Sensor Changed","Heading: " + Float.toString(degree) + " degrees");
+//	    this.architectView.callJavascript("rotateZroadIndicator("+degree+");");
+		
+		synchronized (this) {
+		float heading = event.values[0];
+//		float heading_round = Math.round(heading);
+//		Log.e("Sensor Changed",Float.toString(heading_round)+"===========");
+		
+	    float degree = Math.round(bearing_to_target-heading);
+//	    Log.e("Sensor Changed","Heading: " + degree + " degrees");
+	    this.architectView.callJavascript("rotateZroadIndicator("+degree+");");
+
+	    /*
+	    // create a rotation animation (reverse turn degree degrees)
+	    RotateAnimation ra = new RotateAnimation(
+	            currentDegree, 
+	            -degree,
+	            Animation.RELATIVE_TO_SELF, 0.5f, 
+	            Animation.RELATIVE_TO_SELF,
+	            0.5f);
+	    // how long the animation will take place
+	    ra.setDuration(210);
+	    // set the animation after the end of the reservation status
+	    ra.setFillAfter(true);
+	    // Start the animation
+	    image.startAnimation(ra);
+	    currentDegree = -degree;
+	    */
+		}
 	}
 	
 	@Override
@@ -277,8 +335,17 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 		}
 
 		//onResume is is always called after onStart, even if the app hasn't been paused
+
+//		sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+//		sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+		
+
+        // for the system's orientation sensor registered listeners
+        
 		if(this.sensorManager!=null){
-			sensorManager.registerListener(this,sensorMagneticField,SensorManager.SENSOR_DELAY_NORMAL);
+			sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
+					SensorManager.SENSOR_DELAY_GAME);
+//			sensorManager.registerListener(this,sensorMagneticField,SensorManager.SENSOR_DELAY_NORMAL);
 		}
 		if(this.locationManager!=null){
 			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);	
@@ -304,7 +371,8 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 		}
 
 		if(this.sensorManager!=null){
-			sensorManager.unregisterListener(this,sensorMagneticField);
+			sensorManager.unregisterListener(this);
+//			sensorManager.unregisterListener(this,sensorMagneticField);
 		}
 		  
 //		if ( this.locationProvider != null ) {
@@ -327,7 +395,8 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 			this.architectView.onDestroy();
 		}
 		if(this.sensorManager!=null){
-			sensorManager.unregisterListener(this,sensorMagneticField);
+			sensorManager.unregisterListener(this);
+//			sensorManager.unregisterListener(this,sensorMagneticField);
 		}
 	}
 
@@ -355,7 +424,6 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 		map = mapHlr.initMap();
 		mapHlr.setDestination(dest);
 		
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_CENTER, 14));
 		/*
 		mapHlr = new MapHandler(map,c);
 		mapHlr.addRouteWithRouteCtr();

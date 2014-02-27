@@ -21,7 +21,6 @@ import android.util.Log;
 
 public class RouteInfoController extends AsyncTask<String,Void, List<List<HashMap<String, String>>>>{
 	private final String PLACES_API_BASE="https://maps.googleapis.com/maps/api/directions/json?sensor=false&mode=walking";
-	private final String GOOGLE_API_KEY = "AIzaSyBhfUqAFsL5gjvpwsYTLmfGo9_2f5fAF8Y";
 	private final String LOG_TAG = "RouteInfoController";
 	
 	private LatLng cur;

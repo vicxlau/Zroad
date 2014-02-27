@@ -9,18 +9,18 @@
         />
     <item android:id="@+id/search_btn"    
         android:title="@string/search_tb_hint"  
-	    android:src="@drawable/right_arrow"
+	    android:icon="@drawable/right_arrow"
         android:showAsAction="always"  
         android:actionViewClass="android.widget.ImageButton"
         />
 <!-- 
         android:background="@drawable/noborder"
- -->   
     
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/action_settings"/>
+ -->   
 
 </menu>

@@ -70,12 +70,7 @@
     
     <string name="search_tb_hint">Search</string>
 
-</resources><!--
-<resources>
-
-    <string name="app_name">Zroad_T1</string>
-
-</resources>
--->
-
-
+    <!-- SearchDestActivity & search.xml  -->
+    <string name="null_dest_warning_text">Please set your destination with text searching or map pinning</string>
+    <string name="null_dest_warning_duration">5000</string>
+</resources>

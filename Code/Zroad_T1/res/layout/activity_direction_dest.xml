@@ -6,14 +6,96 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:context=".DirectionDestActivity" >
-
-	<com.wikitude.architect.ArchitectView
+    
+    <com.wikitude.architect.ArchitectView
 	    android:id="@+id/architectView"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent" >
-
 	</com.wikitude.architect.ArchitectView>
+	
+	<RelativeLayout
+	    android:layout_alignParentBottom="true"
+	    android:layout_width="match_parent"
+	    android:layout_height="100dp"
+	    android:background="#DDD"
+	    >
+            <TextView
+		        android:id="@+id/instruct_txt"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_centerInParent="true"
+		        android:textSize="25dp"
+		        android:text="" />
+	</RelativeLayout>
+<!-- 
+	<SlidingDrawer
+        android:id="@+id/instruct_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:bottomOffset="200dp"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical"
+        android:content="@+id/content"
+        android:handle="@+id/handle" >
  
+        <Button
+            android:id="@+id/handle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+			android:background="@android:color/transparent" />
+        
+        <LinearLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:gravity="bottom"
+            android:orientation="vertical"
+            android:background="#DDD">
+            <TextView
+		        android:id="@+id/instruct_txt"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textSize="25dp"
+		        android:background="#DDD"
+		        android:text="" />
+        </LinearLayout>
+    </SlidingDrawer>
+ -->
+ 	
+<!-- Left/Right ONLY drawer 
+	<android.support.v4.widget.DrawerLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:tools="http://schemas.android.com/tools"
+		android:id="@+id/drawer_layout"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		tools:context=".DirectionDestActivity">
+		 
+		<FrameLayout
+		android:id="@+id/content_frame"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="@android:color/transparent">
+			<com.wikitude.architect.ArchitectView
+			    android:id="@+id/architectView"
+			    android:layout_width="fill_parent"
+			    android:layout_height="fill_parent" >
+		
+			</com.wikitude.architect.ArchitectView>
+		</FrameLayout>
+		<ListView
+		android:id="@+id/left_drawer"
+		android:layout_width="240dp"
+		android:layout_height="match_parent"
+		android:layout_gravity="bottom"
+		android:choiceMode="singleChoice"
+		android:divider="@android:color/transparent"
+		android:dividerHeight="0dp"
+		android:background="#111"/>
+
+	</android.support.v4.widget.DrawerLayout>
+
+     -->
     <com.slidinglayer.SlidingLayer
             xmlns:slidingLayer="http://schemas.android.com/apk/res/com.slidinglayersample"
             android:id="@+id/slidingLayer1"

@@ -27,7 +27,7 @@ function Marker(poiData) {
     });
 
 
-    this.titleLabel = new AR.Label(poiData.title, 0.3, {
+    this.titleLabel = new AR.Label(poiData.title, 0.5, {
         zOrder: 1,
         offsetY: 0.55,
         style: {
@@ -36,7 +36,7 @@ function Marker(poiData) {
         }
     });
 
-    this.descriptionLabel = new AR.Label(poiData.description.trunc(15), 0.8, {
+    this.descriptionLabel = new AR.Label(poiData.description.trunc(15), 0.5, {
         zOrder: 1,
         offsetY: -0.55,
         style: {

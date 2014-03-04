@@ -25,6 +25,7 @@ public class RouteInfoController extends AsyncTask<String,Void, List<List<HashMa
 	
 	private LatLng cur;
 	private LatLng dest;
+	private List<String> instructions;
 	
 	private AsyncTaskListener listener;
 	
@@ -47,7 +48,7 @@ public class RouteInfoController extends AsyncTask<String,Void, List<List<HashMa
 	
 	@Override
 	protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-    	listener.onTaskComplete(result);
+    	listener.onTaskComplete(result,instructions);
 	}
 
 	//region private methods
@@ -97,6 +98,7 @@ Log.i(LOG_TAG, "AJAX RESULT: "+result.toString());
     private List<List<HashMap<String,String>>> parse(JSONObject jObject){
 		
 		List<List<HashMap<String, String>>> routes = new ArrayList<List<HashMap<String,String>>>() ;
+		List<String> html_instructions = new ArrayList<String>();
 		JSONArray jRoutes = null;
 		JSONArray jLegs = null;
 		JSONArray jSteps = null;	
@@ -118,6 +120,7 @@ Log.i(LOG_TAG, "AJAX RESULT: "+result.toString());
 					for(int k=0;k<jSteps.length();k++){
 						String polyline = "";
 						polyline = (String)((JSONObject)((JSONObject)jSteps.get(k)).get("polyline")).get("points");
+						html_instructions.add((String)((JSONObject)jSteps.get(k)).get("html_instructions"));
 						List<LatLng> list = decodePoly(polyline);
 						
 						/** Traversing all points */
@@ -137,7 +140,7 @@ Log.i(LOG_TAG, "AJAX RESULT: "+result.toString());
 		}catch (Exception e){			
 		}
 		
-		
+		instructions = html_instructions;
 		return routes;
 	}	
 	

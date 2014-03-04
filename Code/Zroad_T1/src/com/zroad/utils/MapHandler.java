@@ -4,13 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import android.content.Context;
 import android.graphics.Color;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.example.zroad_t1.R;
@@ -31,7 +26,7 @@ public class MapHandler implements AsyncTaskListener {
 	//region Data Members
 	final String LOG_TAG = "MapHandler";
 	final private LatLng DEFAULT_CENTER = Constants.MAP_DEFAULT_CENTER;
-	final BitmapDescriptor MARKER_ICON = BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher); 
+	final BitmapDescriptor MARKER_ICON = BitmapDescriptorFactory.fromResource(Constants.MAP_MARKER_ICON); 
 //	LatLng bound1 = new LatLng(22.321534053237787,114.16566754456949);
 //	LatLng bound2 = new LatLng(22.317067780105184,114.17223359223794);
 		
@@ -40,7 +35,8 @@ public class MapHandler implements AsyncTaskListener {
 	private LatLng dest;
 	private MapHandlerListener listener;
 
-	private ArrayList<LatLng> routes;
+	private List<LatLng> routes;
+	private List<String> instructions;
 	private int curRouteIndex;
 //	private LatLngBounds curLeg;
 //	private Context mapCon; // For getting current location here
@@ -74,7 +70,7 @@ public class MapHandler implements AsyncTaskListener {
 		addDestMarker(false);
 		addCurMarker();
 		
-		ArrayList<LatLng> points = null;
+		List<LatLng> points = null;
 		PolylineOptions lineOptions = null;
 		MarkerOptions markerOptions = new MarkerOptions();
 
@@ -121,6 +117,10 @@ public class MapHandler implements AsyncTaskListener {
 	
 	public LatLng updateIndicatorTarget(){
 		return setCurrentLeg();
+	}
+	
+	public String getCurrentInstruction(){
+		return instructions.get(curRouteIndex).toString();
 	}
 	//endregion
 	
@@ -194,7 +194,7 @@ public class MapHandler implements AsyncTaskListener {
 		
 	private void drawRoute(List<List<HashMap<String,String>>> result){
 
-		ArrayList<LatLng> points = null;
+		List<LatLng> points = null;
 		PolylineOptions lineOptions = null;
 		
 		// Traversing through all the routes
@@ -229,14 +229,14 @@ public class MapHandler implements AsyncTaskListener {
 		}
 	}
 
-	private LatLngBounds getCurBound(){
+	private LatLngBounds getCurRouteBound(){
 //		return new LatLngBounds(routes.get(curRouteIndex),routes.get(curRouteIndex+1));
 		return LatLngBounds.builder().include(routes.get(curRouteIndex)).include(routes.get(curRouteIndex+1)).build();
 	}
 	
 	private LatLng setCurrentLeg(){
 		Log.e(LOG_TAG, "before getCurBound()");
-		if(!getCurBound().contains(getCurrent())){
+		if(!getCurRouteBound().contains(getCurrent())){
 //			Method 1
 //			int ind1 = routes.indexOf(curLeg.northeast);
 //			int ind2 = routes.indexOf(curLeg.southwest);
@@ -244,8 +244,9 @@ public class MapHandler implements AsyncTaskListener {
 //			curLeg = new LatLngBounds(routes.get(index), routes.get(index+1));
 //			return routes.get(index+1);
 			
-			curRouteIndex++;			
+			curRouteIndex=curRouteIndex+1>routes.size()?curRouteIndex:curRouteIndex++;			
 		}
+//		Log.e("current instruction:",instructions.get(curRouteIndex));
 		return routes.get(curRouteIndex+1);
 	}
 	
@@ -253,14 +254,15 @@ public class MapHandler implements AsyncTaskListener {
 
 	//region override methods of AsyncTaskListener
 	@Override
-	public void onTaskComplete(ArrayList<Double> result) {
+	public void onTaskComplete(List<Double> result) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onTaskComplete(List<List<HashMap<String, String>>> result) {
+	public void onTaskComplete(List<List<HashMap<String, String>>> result,List<String>instructions) {
 		drawRoute(result);
+		this.instructions = instructions;
 		listener.onMapHlrLocationChanged(map);
 		//cannot go back to DDA!!!!
 	}

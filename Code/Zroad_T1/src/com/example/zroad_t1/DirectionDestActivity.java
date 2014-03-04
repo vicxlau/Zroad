@@ -12,41 +12,40 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.text.Html;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.SlidingDrawer;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.slidinglayer.SlidingLayer;
 import com.wikitude.architect.ArchitectView;
 import com.wikitude.architect.ArchitectView.ArchitectConfig;
-import com.wikitude.architect.SensorAccuracyChangeListener;
-import com.zroad.interfaces.AsyncTaskListener;
 import com.zroad.interfaces.MapHandlerListener;
-import com.zroad.location.ILocationProvider;
-import com.zroad.location.LocationProvider;
 import com.zroad.utils.Constants;
 import com.zroad.utils.MapHandler;
-import com.zroad.utils.RouteInfoController;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class DirectionDestActivity extends FragmentActivity implements MapHandlerListener, LocationListener, SensorEventListener {
 
@@ -65,12 +64,18 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
      
     //sliding layout
     private SlidingLayer mSlidingLayer;
+    private ImageButton image_btn;
     private String mStickContainerToRightLeftOrMiddle;
     private boolean mShowShadow;
     private boolean mShowOffset;
+
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+    private ActionBarDrawerToggle mDrawerToggle;
     
     //Google Maps
 	private GoogleMap map;
+	private TextView instruct;
 	private MapHandler mapHlr;
 	private LatLng dest;
 	private int counter = 1 ;
@@ -94,7 +99,32 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 		dest = bundle.getParcelable("destination");
 		Log.e("DDA", "Dest: "+dest.latitude+","+dest.longitude);
 
-		//region init sensor settings
+		//region init HTML instruction
+/*		
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		mDrawerList = (ListView) findViewById(R.id.left_drawer);
+		 // Set the adapter for the list view
+		mDrawerList.setAdapter(new ArrayAdapter<String>(this,R.layout.drawer_list_item, mPlanetTitles));
+		
+		mDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,R.drawable.button_red,R.string.hello_world,R.string.app_name) 
+			{
+				  
+				// Called when a drawer has settled in a completely closed state.
+				 public void onDrawerClosed(View view) {
+					 Log.i("HTML instruction", "closed");
+				 }
+				  
+				//Called when a drawer has settled in a completely open state.
+				 public void onDrawerOpened(View drawerView) {
+					 Log.i("HTML instruction", "closed");
+				 }
+		 	};
+				  
+				 // Set the drawer toggle as the DrawerListener
+				 mDrawerLayout.setDrawerListener(mDrawerToggle);
+//				 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//				 getSupportActionBar().setHomeButtonEnabled(true);
+*/
 		//endregion
 		
 		//region init location settings
@@ -164,6 +194,61 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 
         // initialize your android device sensor capabilities
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+        // region HTML instruction
+        instruct = (TextView) findViewById(R.id.instruct_txt);
+        // endregion
+        
+        // region old drawers
+        
+		// region NavDrawer Trial (LEFT/RIGHT ONLY)
+        /*
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // set a custom shadow that overlays the main content when the drawer opens
+//        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        // set up the drawer's list view with items and click listener
+//        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+//                R.layout.drawer_list_item, mPlanetTitles));
+//        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        // enable ActionBar app icon to behave as action to toggle nav drawer
+//        image_btn 
+//        getActionBar().setDisplayHomeAsUpEnabled(true);
+//        getActionBar().setHomeButtonEnabled(true);
+        
+
+        // ActionBarDrawerToggle ties together the the proper interactions
+        // between the sliding drawer and the action bar app icon
+        mDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,R.drawable.button_red,R.string.hello_world,R.string.app_name) 
+		{
+			  
+			// Called when a drawer has settled in a completely closed state.
+			 public void onDrawerClosed(View view) {
+				 Log.i("HTML instruction", "closed");
+			 }
+			  
+			//Called when a drawer has settled in a completely open state.
+			 public void onDrawerOpened(View drawerView) {
+				 Log.i("HTML instruction", "closed");
+			 }
+	 	};
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.openDrawer(Gravity.Start);
+*/
+		//endregion
+
+        //region Sliding Drawer Trial
+
+        /*
+        SlidingDrawer instruct = (SlidingDrawer) findViewById(R.id.instruct_drawer);
+//        instruct.set
+        instruct.open();
+        */
+        //endregion
+        
+        // endregion
 	}
 	
 	@Override
@@ -234,6 +319,7 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 			flagLocInit=false;
 		}else{
 			curIndicatorTarget = mapHlr.updateIndicatorTarget();
+			instruct.setText(Html.fromHtml(mapHlr.getCurrentInstruction()));
 			Log.e("update indicatorTarget",curIndicatorTarget.latitude+" VS "+dest.latitude);
 
 			Location TargetLoc = new Location("destination");
@@ -489,7 +575,7 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
     private void bindViews() {
         mSlidingLayer = (SlidingLayer) findViewById(R.id.slidingLayer1);
         
-        ImageButton image_btn = (ImageButton) findViewById(R.id.buttonOpen);
+        image_btn = (ImageButton) findViewById(R.id.buttonOpen);
 		image_btn.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg){
@@ -556,6 +642,7 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 
         d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
         mSlidingLayer.setLayoutParams(rlp);
+        mSlidingLayer.setSlidingEnabled(false);
 
         // Sets the shadow of the container
         if (mShowShadow) {

@@ -1,5 +1,6 @@
 package com.zroad.utils;
 
+import com.example.zroad_t1.R;
 import com.google.android.gms.maps.model.LatLng;
 
 public class Constants {
@@ -11,5 +12,6 @@ public class Constants {
 	public static final String WIKITUDE_SDK_KEY = "";
 	public static final String GOOGLE_API_KEY = "AIzaSyBhfUqAFsL5gjvpwsYTLmfGo9_2f5fAF8Y";
 	public static final LatLng MAP_DEFAULT_CENTER = new LatLng(22.334341616815642,114.17366262290966);
+	public static final int MAP_MARKER_ICON = R.drawable.zroad_marker;
 	
 }

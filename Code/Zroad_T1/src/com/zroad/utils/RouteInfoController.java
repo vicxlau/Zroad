@@ -26,6 +26,8 @@ public class RouteInfoController extends AsyncTask<String,Void, List<List<HashMa
 	private LatLng cur;
 	private LatLng dest;
 	private List<String> instructions;
+	private List<String> durations;
+	private String google_warning="";
 	
 	private AsyncTaskListener listener;
 	
@@ -48,7 +50,7 @@ public class RouteInfoController extends AsyncTask<String,Void, List<List<HashMa
 	
 	@Override
 	protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-    	listener.onTaskComplete(result,instructions);
+    	listener.onTaskComplete(result,instructions,durations,google_warning);
 	}
 
 	//region private methods
@@ -99,6 +101,7 @@ Log.i(LOG_TAG, "AJAX RESULT: "+result.toString());
 		
 		List<List<HashMap<String, String>>> routes = new ArrayList<List<HashMap<String,String>>>() ;
 		List<String> html_instructions = new ArrayList<String>();
+		durations = new ArrayList<String>();
 		JSONArray jRoutes = null;
 		JSONArray jLegs = null;
 		JSONArray jSteps = null;	
@@ -108,21 +111,41 @@ Log.i(LOG_TAG, "AJAX RESULT: "+result.toString());
 			jRoutes = jObject.getJSONArray("routes");
 			
 			/** Traversing all routes */
-			for(int i=0;i<jRoutes.length();i++){			
-				jLegs = ( (JSONObject)jRoutes.get(i)).getJSONArray("legs");
+			for(int i=0;i<jRoutes.length();i++){
+				JSONObject cur_jRoute = (JSONObject)jRoutes.get(i);
+				
+				// Traversing all warnings of the current route 
+				JSONArray jWarnings = cur_jRoute.getJSONArray("warnings");
+				for(int w=0; w<jWarnings.length();w++){
+					google_warning += jWarnings.getString(w) +"/n";
+				}
+				
+				jLegs = cur_jRoute.getJSONArray("legs");
 				List path = new ArrayList<HashMap<String, String>>();
 				
 				/** Traversing all legs */
 				for(int j=0;j<jLegs.length();j++){
 					jSteps = ( (JSONObject)jLegs.get(j)).getJSONArray("steps");
 					
-					/** Traversing all steps */
+					/** Traversing all steps
+					 *  Each step consists:
+					 *  one polyline ( st.line = 2pts ; curve line = >2pts)
+					 *  one html_instruction
+					 *  
+					 *  List<Hash<String,String> pts_in_polyline
+					 *  String html_instruction
+					 *  
+					 *  List<List<Hash<String,String>> pts_in_list_polylines
+					 *  List<String> list_html_instruction
+					 * */
 					for(int k=0;k<jSteps.length();k++){
+						JSONObject cur_jStep = (JSONObject)jSteps.get(k);
 						String polyline = "";
-						polyline = (String)((JSONObject)((JSONObject)jSteps.get(k)).get("polyline")).get("points");
-						html_instructions.add((String)((JSONObject)jSteps.get(k)).get("html_instructions"));
+						polyline = (String)((JSONObject)cur_jStep.get("polyline")).get("points");
+						html_instructions.add((String)cur_jStep.get("html_instructions"));
+						durations.add((String)((JSONObject)cur_jStep.get("duration")).get("text"));
 						List<LatLng> list = decodePoly(polyline);
-						
+//Log.e(LOG_TAG, "1 instruction ; "+list.size()+" pts");						
 						/** Traversing all points */
 						for(int l=0;l<list.size();l++){
 							HashMap<String, String> hm = new HashMap<String, String>();

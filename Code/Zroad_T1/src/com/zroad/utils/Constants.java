@@ -14,4 +14,8 @@ public class Constants {
 	public static final LatLng MAP_DEFAULT_CENTER = new LatLng(22.334341616815642,114.17366262290966);
 	public static final int MAP_MARKER_ICON = R.drawable.zroad_marker;
 	
+	// for SearchDestActivity,DestInfoController
+	public static final int DEST_MARKER_INFO = 1;
+	public static final int DEST_AUTOCOMPLETE_INFO = 2;
+	
 }

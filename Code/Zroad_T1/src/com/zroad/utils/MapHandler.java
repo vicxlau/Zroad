@@ -37,6 +37,9 @@ public class MapHandler implements AsyncTaskListener {
 
 	private List<LatLng> routes;
 	private List<String> instructions;
+	private List<String> durations;
+	private String warning;
+	
 	private int curRouteIndex;
 //	private LatLngBounds curLeg;
 //	private Context mapCon; // For getting current location here
@@ -57,7 +60,7 @@ public class MapHandler implements AsyncTaskListener {
 		// Enable MyLocation Button in the Map
 		map.setMyLocationEnabled(true);
 		map.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_CENTER, 17));
-		curRouteIndex = 1;
+		curRouteIndex = 0;
 	    return map;
 	}
 
@@ -117,6 +120,11 @@ public class MapHandler implements AsyncTaskListener {
 	
 	public LatLng updateIndicatorTarget(){
 		return setCurrentLeg();
+		
+//		For Testing cET()
+//		LatLng temp = setCurrentLeg();
+//		calEstimatedTime();
+//		return temp;
 	}
 	
 	public String getCurrentInstruction(){
@@ -135,6 +143,14 @@ public class MapHandler implements AsyncTaskListener {
 	
 	public LatLng getDestination(){
 		return dest;
+	}
+	
+	public String getWarning(){
+		return warning==null?"":warning;
+	}
+	
+	public int getEstimatedTime(){
+		return calEstimatedTime();
 	}
 	//endregion
 
@@ -229,6 +245,16 @@ public class MapHandler implements AsyncTaskListener {
 		}
 	}
 
+	private int calEstimatedTime(){
+		int time =0;
+		for(int i=durations.size()-1; i>=curRouteIndex;i--){
+			String cur_dur = durations.get(i);
+//			Log.e(LOG_TAG, "After substring:"+cur_dur.substring(0, cur_dur.indexOf(' ')));
+			time += Integer.parseInt(cur_dur.substring(0, cur_dur.indexOf(' ')));
+		}
+		return time;
+	}
+	
 	private LatLngBounds getCurRouteBound(){
 //		return new LatLngBounds(routes.get(curRouteIndex),routes.get(curRouteIndex+1));
 		return LatLngBounds.builder().include(routes.get(curRouteIndex)).include(routes.get(curRouteIndex+1)).build();
@@ -254,16 +280,24 @@ public class MapHandler implements AsyncTaskListener {
 
 	//region override methods of AsyncTaskListener
 	@Override
-	public void onTaskComplete(List<Double> result) {
+	public void onTaskComplete(String result) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onTaskComplete(LatLng result) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onTaskComplete(List<List<HashMap<String, String>>> result,List<String>instructions) {
+	public void onTaskComplete(List<List<HashMap<String, String>>> result,List<String>instructions,List<String>durations,String google_warning) {
 		drawRoute(result);
 		this.instructions = instructions;
+		this.durations = durations;
+		this.warning = google_warning;
 		listener.onMapHlrLocationChanged(map);
-		//cannot go back to DDA!!!!
 	}
+	//endregion
 }

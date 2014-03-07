@@ -23,10 +23,12 @@ import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -68,10 +70,11 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
     private String mStickContainerToRightLeftOrMiddle;
     private boolean mShowShadow;
     private boolean mShowOffset;
+    private TextView estimated_time;
 
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
-    private ActionBarDrawerToggle mDrawerToggle;
+//    private DrawerLayout mDrawerLayout;
+//    private ListView mDrawerList;
+//    private ActionBarDrawerToggle mDrawerToggle;
     
     //Google Maps
 	private GoogleMap map;
@@ -130,6 +133,9 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 		//region init location settings
 //		initLocationSetting();
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+Toast.makeText(getApplicationContext(), "is GPS enabled: "+String.valueOf(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)),5000).show();
+//		Log.e("is GPS enabled", String.valueOf(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)));
+
 		//endregion
 		
 		//region init sliding layout
@@ -302,7 +308,9 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 	public void onMapHlrLocationChanged(GoogleMap result){
 		map = result;
 		curIndicatorTarget = mapHlr.updateIndicatorTarget();
+		Toast.makeText(getApplicationContext(), "Estimated Time: "+mapHlr.getEstimatedTime()+"mins", 5000).show();
 		Log.e("Init indicatorTarget",curIndicatorTarget.latitude+" VS "+dest.latitude);
+//		this.architectView.callJavascript("changeStatus(\""+mapHlr.getWarning()+"\");");
 
 //        Toast.makeText(getBaseContext(),"Return map from MapHlr with route",Toast.LENGTH_LONG).show();
 	}
@@ -319,6 +327,8 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 			flagLocInit=false;
 		}else{
 			curIndicatorTarget = mapHlr.updateIndicatorTarget();
+			estimated_time.setText(mapHlr.getEstimatedTime()+"mins left");
+Toast.makeText(getApplicationContext(), "Estimated Time: "+mapHlr.getEstimatedTime()+"mins", 5000).show();
 			instruct.setText(Html.fromHtml(mapHlr.getCurrentInstruction()));
 			Log.e("update indicatorTarget",curIndicatorTarget.latitude+" VS "+dest.latitude);
 
@@ -434,7 +444,23 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 //			sensorManager.registerListener(this,sensorMagneticField,SensorManager.SENSOR_DELAY_NORMAL);
 		}
 		if(this.locationManager!=null){
-			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);	
+//			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);
+
+//			Criteria crta = new Criteria(); 
+//			crta.setAccuracy(Criteria.ACCURACY_FINE); 
+//			crta.setAltitudeRequired(false); 
+//			crta.setBearingRequired(true); 
+//			crta.setCostAllowed(false); 
+//			crta.setPowerRequirement(Criteria.POWER_LOW); 
+//			String provider = locationManager.getBestProvider(crta, true); 
+
+			
+//			Location loc = locationManager.getLastKnownLocation(provider);
+//			setARMapComponent(loc.getLatitude(),loc.getLongitude());
+			
+//			locationManager.requestLocationUpdates( provider,
+//			locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000, 1, this);	
 		}
 //		if ( this.locationProvider != null ) {
 //			this.locationProvider.onResume();
@@ -698,4 +724,13 @@ public class DirectionDestActivity extends FragmentActivity implements MapHandle
 
     //endregion
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.direction_dest, menu);
+		estimated_time = (TextView) menu.findItem(R.id.estimated_time).getActionView();
+		estimated_time.setText(R.string.estimated_time_loading_txt);
+		
+	    return super.onCreateOptionsMenu(menu);
+	}
 }

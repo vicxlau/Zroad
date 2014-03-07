@@ -1,13 +1,12 @@
 // holds server information
 var ServerInformation = {
-	//POIDATA_SERVER: "http://144.214.121.5:56833/PoiService.asmx/getpois?",
-	POIDATA_SERVER: "http://144.214.121.5/",
+	POIDATA_SERVER: "http://144.214.121.5/PoiService.asmx/getpois",
+	//POIDATA_SERVER: "http://144.214.121.5/",
 	//POIDATA_SERVER: "http://example.wikitude.com/GetSamplePois/",
 	POIDATA_SERVER_ARG_LAT: "lat",
 	POIDATA_SERVER_ARG_LON: "lng",
 	POIDATA_SERVER_ARG_NR_POIS: "nrPois"
 };
-
 
 var World = {
 
@@ -23,7 +22,7 @@ var World = {
 
 		AR.context.destroyAll();
 
-		World.markerDrawable_idle = new AR.ImageResource("assets/marker_idle.png"),
+		World.markerDrawable_idle = new AR.ImageResource("assets/zroad_idle.png"),
 		World.markerDrawable_selected = new AR.ImageResource("assets/marker_selected.png"),
 		World.markerDrawable_directionIndicator = new AR.ImageResource("assets/indi.png"),
 		//World.markerDrawable_zroadDirection = new AR.ImageResource("assets/indi.png"),
@@ -73,8 +72,8 @@ var World = {
 	// request POI data
 	requestDataFromServer: function requestDataFromServerFn(lat, lon) {
 		//var serverUrl = ServerInformation.POIDATA_SERVER + "?" + ServerInformation.POIDATA_SERVER_ARG_LAT + "=" + lat + "&" + ServerInformation.POIDATA_SERVER_ARG_LON + "=" + lon + "&" + ServerInformation.POIDATA_SERVER_ARG_NR_POIS + "=20";
-		//var serverUrl = ServerInformation.POIDATA_SERVER + "?" + ServerInformation.POIDATA_SERVER_ARG_LAT + "=" + lat + "&" + ServerInformation.POIDATA_SERVER_ARG_LON + "=" + lon;
-		var serverUrl = ServerInformation.POIDATA_SERVER;
+		var serverUrl = ServerInformation.POIDATA_SERVER + "?lat=" + lat + "&lng="+ lon;
+		//var serverUrl = ServerInformation.POIDATA_SERVER;
 		var jqxhr = $.getJSON(serverUrl, function(data) {
 			World.loadPoisFromJsonData(data);
 		})

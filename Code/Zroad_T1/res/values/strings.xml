@@ -73,4 +73,9 @@
     <!-- SearchDestActivity & search.xml  -->
     <string name="null_dest_warning_text">Please set your destination with text searching or map pinning</string>
     <string name="null_dest_warning_duration">5000</string>
+
+    <!-- DirectionDestActivity & activity_direction_dest.xml  -->
+    <string name="estimated_time_loading_txt">Loading estimated time....</string>
+    <string name="estimated_time_title_txt">Estimated Time</string>
+    
 </resources>

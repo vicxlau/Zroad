@@ -444,7 +444,7 @@ Toast.makeText(getApplicationContext(), "Estimated Time: "+mapHlr.getEstimatedTi
 //			sensorManager.registerListener(this,sensorMagneticField,SensorManager.SENSOR_DELAY_NORMAL);
 		}
 		if(this.locationManager!=null){
-//			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);
+			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);
 
 //			Criteria crta = new Criteria(); 
 //			crta.setAccuracy(Criteria.ACCURACY_FINE); 
@@ -460,7 +460,7 @@ Toast.makeText(getApplicationContext(), "Estimated Time: "+mapHlr.getEstimatedTi
 			
 //			locationManager.requestLocationUpdates( provider,
 //			locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
-			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000, 1, this);	
+//			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000, 1, this);	
 		}
 //		if ( this.locationProvider != null ) {
 //			this.locationProvider.onResume();

@@ -1,26 +1,19 @@
 package com.example.zroad_t1;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.zroad.utils.Constants;
+import com.google.android.gms.maps.model.Marker;
 import com.zroad.utils.DestAutoCompleteAdapter;
 import com.zroad.utils.DestInfoController;
-import com.zroad.utils.PlacesAutoCompleteAdapter;
 import com.zroad.utils.MapHandler;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -85,6 +78,21 @@ public class SearchDestActivity extends FragmentActivity implements OnItemClickL
         		Toast.makeText(getApplicationContext(), R.string.null_dest_warning_text, Integer.valueOf(R.string.null_dest_warning_duration)).show();
         }
     };
+    
+	OnMarkerDragListener mkrDragLtr = new OnMarkerDragListener(){
+		@Override
+		public void onMarkerDrag(Marker mkr) {}
+
+		@Override
+		public void onMarkerDragEnd(Marker mkr) {
+			changeSearchTextView("");
+			DestInfoController markerNameClr = new DestInfoController(SearchDestActivity.this,mkr.getPosition());
+			markerNameClr.execute("");
+		}
+
+		@Override
+		public void onMarkerDragStart(Marker mkr) {}
+	};
 	
 	OnMapClickListener mapLtr = new OnMapClickListener() {
 		@Override
@@ -98,7 +106,11 @@ Log.i("OnMapClick", "Lat: "+lat+"; Lng: "+lng);
 			
 			// Draws destination marker on the Google Map
 			addDestMarker(lat,lng);
-			changeSearchTextView(lat+","+lng);
+			
+			DestInfoController markerNameClr = new DestInfoController(SearchDestActivity.this,point);
+			markerNameClr.execute("");
+//			changeSearchTextView(lat+","+lng);
+			
 		}
 	};
 	
@@ -116,6 +128,7 @@ Log.i("OnMapClick", "Lat: "+lat+"; Lng: "+lng);
 	
 	//region private methods
 	private void changeSearchTextView(String str){
+		autoCompView.setText("");
 		autoCompView.setHint(str);
 	}
 	
@@ -144,6 +157,7 @@ Log.i("OnMapClick", "Lat: "+lat+"; Lng: "+lng);
 		mapHlr = new MapHandler(map,this);
 		map = mapHlr.initMap();
 		map.setOnMapClickListener(mapLtr);
+		map.setOnMarkerDragListener(mkrDragLtr);
 	}
 	
 	private void addDestMarker(double lat,double lng){
@@ -202,20 +216,23 @@ Log.i("OnMapClick", "Lat: "+lat+"; Lng: "+lng);
 
 	//region override methods of AsyncTaskListener
 	@Override
-	public void onTaskComplete(ArrayList<Double> result){
-//		Log.i("OnTaskClick","Dest: "+result.get(0) +","+ result.get(1));
-		Double lat = result.get(0); 
-		Double lng = result.get(1);
-		Log.e("OnTaskClick","Dest: "+lat+","+lng);
-//		addDestMarker(lat,lng);
-		LatLng dest = new LatLng(lat,lng);
-		
-		// Start Direction Activity
-		redirect(dest);
+	public void onTaskComplete(String result){
+		changeSearchTextView(result);
 	}
 	
 	@Override
-	public void onTaskComplete(List<List<HashMap<String, String>>> result) {
+	public void onTaskComplete(LatLng result){
+//		Double lat = result.get(0); 
+//		Double lng = result.get(1);
+//		Log.e("OnTaskClick","Dest: "+lat+","+lng);
+//		LatLng dest = new LatLng(lat,lng);
+		
+		// Start Direction Activity
+		redirect(result);
+	}
+	
+	@Override
+	public void onTaskComplete(List<List<HashMap<String, String>>> result, List<String>instructions, List<String>durations, String google_warning) {
 		// TODO Auto-generated method stub
 		
 	}
